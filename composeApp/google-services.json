@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1044927943178",
+    "project_id": "solo-leveling-v2-68774",
+    "storage_bucket": "solo-leveling-v2-68774.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1044927943178:android:f16ad46e85db15c496c5f3",
+        "android_client_info": {
+          "package_name": "co.za.xdcodes.level_up"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDexpo3hi3-9Ve6ZTix11b_ITWirNIahM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

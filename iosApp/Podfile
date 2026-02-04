@@ -1,0 +1,8 @@
+platform :ios, '14.0'
+
+target 'iosApp' do
+  use_frameworks!
+
+  # Path to your ComposeApp shared module
+  pod 'ComposeApp', :path => '../composeApp'
+end
