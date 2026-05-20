@@ -23,7 +23,6 @@ fun CardComposable(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.08f)
         ),

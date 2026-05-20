@@ -56,6 +56,9 @@ kotlin {
             implementation(libs.navigation.compose)
 
             implementation("dev.gitlive:firebase-firestore:2.4.0")
+
+            // Swipe gesture library (KMP-compatible)
+            implementation("me.saket.swipe:swipe:1.3.0")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -11,6 +11,7 @@ data class DashboardState(
     val dashboardStreaks: DashboardModel? = DashboardModel(),
     val badgeStreaks: Pair<ConsistencyTier?, ConsistencyTier?>? = null,
     val workoutStreaks: Pair<CategoryMedalTier?, CategoryMedalTier?>? = null,
+    val daysInChallenge: Int = 0,
     val tradingStreaks: Pair<CategoryMedalTier?, CategoryMedalTier?>? = null,
     val runningStreaks: Pair<CategoryMedalTier?, CategoryMedalTier?>? = null,
     val taskForToday: List<TaskModel> = emptyList(),

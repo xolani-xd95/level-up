@@ -5,11 +5,14 @@ import co.za.xdcodes.level_up.dashboard.domain.DashboardRepository
 import co.za.xdcodes.level_up.dashboard.presentation.DashboardViewModel
 import co.za.xdcodes.level_up.finance.data.FirebaseBudgetRepositoryImpl
 import co.za.xdcodes.level_up.finance.domain.BudgetRepository
-import co.za.xdcodes.level_up.finance.presentation.budget.BudgetScreenViewModel
-import co.za.xdcodes.level_up.workout.data.FirebaseWorkoutRepository
-import co.za.xdcodes.level_up.workout.domain.WorkoutRepository
-import co.za.xdcodes.level_up.workout.presentation.WorkoutListViewModel
-import co.za.xdcodes.level_up.workout.presentation.create.CreateWorkoutViewModel
+import co.za.xdcodes.level_up.finance.presentation.budgetOverview.BudgetScreenViewModel
+import co.za.xdcodes.level_up.finance.presentation.budgetTransactions.TransactionsViewModel
+import co.za.xdcodes.level_up.finance.presentation.createbudget.CreateBudgetViewModel
+import co.za.xdcodes.level_up.journal.data.FirebaseTradingRepositoryImpl
+import co.za.xdcodes.level_up.journal.domain.JournalRepository
+import co.za.xdcodes.level_up.journal.presentation.details.DayDetailViewModel
+import co.za.xdcodes.level_up.journal.presentation.home.JournalHomeViewModel
+import co.za.xdcodes.level_up.journal.presentation.setup.JournalSetupViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -22,9 +25,12 @@ expect val platformModule: Module
 val sharedModule = module {
     singleOf(::FirebaseDashboardRepository).bind<DashboardRepository>()
     singleOf(::FirebaseBudgetRepositoryImpl).bind<BudgetRepository>()
-    singleOf(::FirebaseWorkoutRepository).bind<WorkoutRepository>()
+    singleOf(::FirebaseTradingRepositoryImpl).bind<JournalRepository>()
     viewModelOf(::DashboardViewModel)
     viewModelOf(::BudgetScreenViewModel)
-    viewModelOf(::WorkoutListViewModel)
-    viewModelOf(::CreateWorkoutViewModel)
+    viewModelOf(::CreateBudgetViewModel)
+    viewModelOf(::TransactionsViewModel)
+    viewModelOf(::JournalHomeViewModel)
+    viewModelOf(::DayDetailViewModel)
+    viewModelOf(::JournalSetupViewModel)
 }

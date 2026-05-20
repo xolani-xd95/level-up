@@ -39,7 +39,7 @@ fun CustomBottomNavigationBar(
 
     if (currentRoute == BottomNavDestination.Dashboard.route ||
         currentRoute == BottomNavDestination.Finance.route ||
-        currentRoute == BottomNavDestination.Workout.route ||
+        currentRoute == BottomNavDestination.Journal.route ||
         currentRoute == BottomNavDestination.Profile.route
     )
         Row(
@@ -81,7 +81,7 @@ fun CustomBottomNavigationBar(
 val bottomNavItems = listOf(
     BottomNavDestination.Dashboard,
     BottomNavDestination.Finance,
-    BottomNavDestination.Workout,
+    BottomNavDestination.Journal,
     BottomNavDestination.Profile
 )
 
@@ -91,6 +91,6 @@ sealed class BottomNavDestination(
 ) {
     object Dashboard : BottomNavDestination("dashboard", Res.drawable.ic_home)
     object Finance : BottomNavDestination("finance", Res.drawable.ic_finance)
-    object Workout : BottomNavDestination("workout", Res.drawable.ic_exercise)
+    object Journal : BottomNavDestination("journal", Res.drawable.ic_exercise)
     object Profile : BottomNavDestination("profile", Res.drawable.ic_profile)
 }

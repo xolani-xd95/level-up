@@ -23,7 +23,7 @@ class FirebaseDashboardRepository(
             goalDaysCompleted = snapshot.get("goalDaysCompleted") ?: 0,
             goalDays = snapshot.get("goalDays") ?: 0,
             workoutStreak = snapshot.get("workoutStreak") ?: 0,
-            runningStreak = snapshot.get("runningStreak") ?: 0,
+            runningStreak = snapshot.get("runningStreaks") ?: 0,
             tradingDiscipline = snapshot.get("tradingDiscipline") ?: 0,
             lastCheckInDate = snapshot.get("lastCheckInDate") ?: "",
         )

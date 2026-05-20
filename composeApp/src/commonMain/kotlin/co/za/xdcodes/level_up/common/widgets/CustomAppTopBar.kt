@@ -41,7 +41,7 @@ fun CustomAppTopBar(
             if (showNavigationIcon)
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.White,
                     contentDescription = "",
                     modifier = Modifier.clickable {
                         onNavigate()
@@ -52,7 +52,8 @@ fun CustomAppTopBar(
                 title,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.primary)
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
             )
         }
 
