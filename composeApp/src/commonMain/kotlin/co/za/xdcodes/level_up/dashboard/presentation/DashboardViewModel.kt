@@ -18,12 +18,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.todayIn
 
 class DashboardViewModel(
     private val repository: DashboardRepository
 ) : ViewModel() {
+
+    val timeZone = TimeZone.currentSystemDefault()
+    val currentDate = Clock.System.todayIn(timeZone)
+
     private val _state = MutableStateFlow(
         DashboardState(
             weekDays = listOf(
@@ -183,7 +193,7 @@ class DashboardViewModel(
                 TaskCategory.RUNNING -> {
                     viewModelScope.launch {
                         repository.updateDashboardStreak(
-                            "runningStreaks",
+                            "runningStreak",
                             dashboard.runningStreak + 1
                         )
                     }
@@ -211,8 +221,15 @@ class DashboardViewModel(
             val next = tiers
                 .firstOrNull { it.daysRequired > dashboardStreaks.goalDaysCompleted }
 
+
+            val daysInChallenge = calculateDaysInChallenge(
+                startDate = LocalDate.parse("2026-02-02"),
+                today = currentDate
+            )
+
             _state.update {
                 it.copy(
+                    daysInChallenge = daysInChallenge,
                     workoutStreaks = resolveCategoryMedal(
                         progressCount = dashboardStreaks.workoutStreak,
                         workoutMedals
@@ -234,6 +251,27 @@ class DashboardViewModel(
         }
     }
 
+    fun calculateDaysInChallenge(
+        startDate: LocalDate,
+        today: LocalDate
+    ): Int {
+        var count = 0
+        var date = startDate
+
+        val endDate = today.minus(DatePeriod(days = 1))
+
+        while (date <= endDate) {
+            if (date.dayOfWeek != DayOfWeek.SATURDAY &&
+                date.dayOfWeek != DayOfWeek.SUNDAY
+            ) {
+                count++
+            }
+            date = date.plus(DatePeriod(days = 1))
+        }
+
+        return count
+    }
+
     fun resolveCategoryMedal(
         progressCount: Int,
         medals: List<CategoryMedalTier>
@@ -252,10 +290,7 @@ class DashboardViewModel(
 
     fun getTaskForToday() {
         viewModelScope.launch {
-            val timeZone = TimeZone.currentSystemDefault()
-            val currentDate = Clock.System.todayIn(timeZone).toString()
-
-            val listOfTasks = repository.getTasks(currentDate)
+            val listOfTasks = repository.getTasks(currentDate.toString())
             _state.update {
                 it.copy(
                     taskForToday = listOfTasks

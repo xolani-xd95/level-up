@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,15 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,27 +35,25 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import co.za.xdcodes.level_up.dashboard.domain.dto.CategoryMedalTier
+import co.za.xdcodes.level_up.dashboard.domain.dto.DashboardModel
 import co.za.xdcodes.level_up.dashboard.domain.dto.TaskCategory
 import co.za.xdcodes.level_up.dashboard.domain.dto.TaskModel
 import co.za.xdcodes.level_up.dashboard.domain.dto.TaskPriority
 import co.za.xdcodes.level_up.dashboard.domain.dto.TaskState
 import co.za.xdcodes.level_up.theme.LevelUpTheme
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
-import level_up.composeapp.generated.resources.D1_consistency
-import level_up.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
@@ -102,73 +97,82 @@ fun DashboardScreen(
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
-//                    ArcProgressBarComposable(total = 90, completed = 5)
-                    Image(
-                        painter = painterResource(currentTier.drawable),
-                        modifier = Modifier.size(130.dp),
-                        contentDescription = ""
-                    )
-
-                    Text(
-                        currentTier.title,
-                        modifier = Modifier.padding(vertical = 6.dp),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFD4AF37)
-                    )
-                }
-                nextTier?.let { nextTier ->
-                    val remainingDays =
-                        nextTier.daysRequired - (state.dashboardStreaks?.goalDaysCompleted ?: 0)
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White.copy(alpha = 0.05f))
-                            .fillMaxWidth()
-                            .drawWithContent {
-                                drawContent()
-                                drawRect(
-                                    brush = Brush.verticalGradient(
-                                        listOf(Color.White.copy(0.12f), Color.Transparent)
-                                    )
-                                )
-                            }
-                            .padding(8.dp)
+                    Box(
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Text(
-                                "${nextTier.daysRequired - remainingDays}d",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = Color.LightGray
-                            )
-
-                            Text(
-                                "next milestone: ${nextTier.title}",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.LightGray
-                            )
-                            Text(
-                                "${nextTier.daysRequired}d",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = Color.LightGray
-                            )
-                        }
-
-                        LinearProgressIndicator(
-                            progress = { remainingDays / nextTier.daysRequired.toFloat() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(4.dp)
-                                .clip(RoundedCornerShape(2.dp)),
-                            color = Color(0xFFD4AF37),
-                            trackColor = Color.White.copy(alpha = 0.1f)
+                        CircularProgressIndicator(
+                            progress = {
+                                val completed =
+                                    state.daysInChallenge.toFloat()
+                                val total = state.dashboardStreaks?.goalDays?.toFloat() ?: 90f
+                                (completed / total).coerceIn(0f, 1f)
+                            },
+                            modifier = Modifier.size(140.dp),
+                            strokeWidth = 4.dp,
+                            trackColor = Color.White.copy(alpha = 0.08f)
+                        )
+                        Image(
+                            painter = painterResource(currentTier.drawable),
+                            modifier = Modifier.size(130.dp),
+                            contentDescription = currentTier.title
                         )
                     }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    StreakChallengeLabelCard(state = state)
                 }
+//                nextTier?.let { nextTier ->
+//                    val remainingDays =
+//                        nextTier.daysRequired - (state.dashboardStreaks?.goalDaysCompleted ?: 0)
+//
+//                    Column(
+//                        modifier = Modifier.fillMaxWidth()
+//                            .clip(RoundedCornerShape(8.dp))
+//                            .background(Color.White.copy(alpha = 0.05f))
+//                            .fillMaxWidth()
+//                            .drawWithContent {
+//                                drawContent()
+//                                drawRect(
+//                                    brush = Brush.verticalGradient(
+//                                        listOf(Color.White.copy(0.12f), Color.Transparent)
+//                                    )
+//                                )
+//                            }
+//                            .padding(8.dp)
+//                    ) {
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                            verticalAlignment = Alignment.Bottom
+//                        ) {
+//                            Text(
+//                                "${nextTier.daysRequired - remainingDays}d",
+//                                style = MaterialTheme.typography.labelMedium,
+//                                color = Color.LightGray
+//                            )
+//
+//                            Text(
+//                                "next milestone: ${nextTier.title}",
+//                                style = MaterialTheme.typography.labelLarge,
+//                                color = Color.LightGray
+//                            )
+//                            Text(
+//                                "${nextTier.daysRequired}d",
+//                                style = MaterialTheme.typography.labelMedium,
+//                                color = Color.LightGray
+//                            )
+//                        }
+//
+//                        LinearProgressIndicator(
+//                            progress = { (nextTier.daysRequired - remainingDays) / nextTier.daysRequired.toFloat() },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .height(4.dp)
+//                                .clip(RoundedCornerShape(2.dp)),
+//                            color = Color(0xFFD4AF37),
+//                            trackColor = Color.White.copy(alpha = 0.1f)
+//                        )
+//                    }
+//                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -178,26 +182,30 @@ fun DashboardScreen(
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.White.copy(alpha = 0.05f))
                     .fillMaxWidth()
-//                        .drawWithContent {
-//                            drawContent()
-//                            drawRect(
-//                                brush = Brush.verticalGradient(
-//                                    listOf(Color.White.copy(0.12f), Color.Transparent)
-//                                )
-//                            )
-//                        }
                     .padding(6.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 state.workoutStreaks?.first?.let {
-                    CategoryMedalItem(it)
+                    CategoryMedalItem(
+                        medal = it,
+                        required = state.workoutStreaks.second?.requiredCount ?: 0,
+                        completed = state.dashboardStreaks?.workoutStreak ?: 0
+                    )
                 }
 
                 state.tradingStreaks?.first?.let {
-                    CategoryMedalItem(it)
+                    CategoryMedalItem(
+                        medal = it,
+                        required = state.tradingStreaks.second?.requiredCount ?: 0,
+                        completed = state.dashboardStreaks?.tradingDiscipline ?: 0
+                    )
                 }
                 state.runningStreaks?.first?.let {
-                    CategoryMedalItem(it)
+                    CategoryMedalItem(
+                        medal = it,
+                        required = state.runningStreaks.second?.requiredCount ?: 0,
+                        completed = state.dashboardStreaks?.runningStreak ?: 0
+                    )
                 }
             }
 
@@ -206,6 +214,65 @@ fun DashboardScreen(
             TaskOverviewCard(
                 tasks = state.taskForToday,
                 onNavigate = onNavigate
+            )
+        }
+    }
+}
+
+@Composable
+fun StreakChallengeLabelCard(
+    state: DashboardState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color.White.copy(alpha = 0.05f))
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            "${state.daysInChallenge} days into the ${state.dashboardStreaks?.goalDays}-day challenge",
+            style = MaterialTheme.typography.titleSmall,
+            color = Color.White.copy(alpha = 0.8f),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        append("completed: ")
+                    }
+                    withStyle(style = SpanStyle(fontSize = 16.sp, color = Color.White)) {
+                        append("${state.dashboardStreaks?.goalDaysCompleted}")
+                    }
+                },
+                style = MaterialTheme.typography.labelMedium,
+            )
+
+            Text(
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        append("missed: ")
+                    }
+                    withStyle(style = SpanStyle(fontSize = 16.sp, color = Color.Red)) {
+                        append("${(state.daysInChallenge - (state.dashboardStreaks?.goalDaysCompleted ?: 0))}")
+                    }
+                },
+                style = MaterialTheme.typography.labelMedium,
             )
         }
     }
@@ -232,14 +299,6 @@ fun TaskOverviewCard(
             .clip(RoundedCornerShape(8.dp))
             .background(Color.White.copy(alpha = 0.05f))
             .fillMaxWidth()
-//            .drawWithContent {
-//                drawContent()
-//                drawRect(
-//                    brush = Brush.verticalGradient(
-//                        listOf(Color.White.copy(0.12f), Color.Transparent)
-//                    )
-//                )
-//            }
             .padding(bottom = 12.dp, start = 8.dp)
             .clickable {
                 onNavigate()
@@ -352,15 +411,29 @@ fun TaskOverviewCard(
 }
 
 @Composable
-fun CategoryMedalItem(medal: CategoryMedalTier) {
+fun CategoryMedalItem(medal: CategoryMedalTier, required: Int, completed: Int) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Image(
-            painter = painterResource(medal.drawable),
-            contentDescription = "",
-            modifier = Modifier.size(90.dp)
-        )
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                progress = {
+                    val completed = completed.toFloat()
+                    val total = required.toFloat()
+                    (completed / total).coerceIn(0f, 1f)
+                },
+                modifier = Modifier.size(100.dp),
+                strokeWidth = 2.dp,
+                trackColor = Color.White.copy(alpha = 0.08f)
+            )
+            Image(
+                painter = painterResource(medal.drawable),
+                contentDescription = "",
+                modifier = Modifier.size(90.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(6.dp))
 
@@ -374,235 +447,17 @@ fun CategoryMedalItem(medal: CategoryMedalTier) {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUuidApi::class)
-@Composable
-fun AddTaskBottomSheet(
-    onAddTask: (TaskModel) -> Unit
-) {
-    var taskName by remember { mutableStateOf("") }
-
-    var categoryExpanded by remember { mutableStateOf(false) }
-    var durationExpanded by remember { mutableStateOf(false) }
-    var priorityExpanded by remember { mutableStateOf(false) }
-
-    var selectedCategory by remember { mutableStateOf(TaskCategory.WORKOUT) }
-    var selectedDuration by remember { mutableStateOf("15min") }
-    var selectedPriority by remember { mutableStateOf(TaskPriority.LOW) }
-
-    val timeZone = TimeZone.currentSystemDefault()
-    val currentDate = Clock.System.todayIn(timeZone).toString()
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        // Title
-        Text(
-            text = "Add Task",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        // Task name
-        OutlinedTextField(
-            value = taskName,
-            textStyle = TextStyle(color = Color.White),
-            onValueChange = { taskName = it },
-            label = { Text("Task name") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // CATEGORY
-        ExposedDropdownMenuBox(
-            expanded = priorityExpanded,
-            onExpandedChange = { priorityExpanded = !priorityExpanded },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = selectedPriority.priority,
-                onValueChange = {},
-                textStyle = TextStyle(color = Color.White),
-                readOnly = true,
-                label = { Text("Priority") },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = priorityExpanded)
-                },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
-            )
-
-            ExposedDropdownMenu(
-                expanded = priorityExpanded,
-                onDismissRequest = { priorityExpanded = false }
-            ) {
-                TaskPriority.entries.forEach {
-                    DropdownMenuItem(
-                        text = { Text(it.priority, style = TextStyle(color = Color.White)) },
-                        onClick = {
-                            selectedPriority = it
-                            priorityExpanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        // Dropdowns
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            // CATEGORY
-            ExposedDropdownMenuBox(
-                expanded = categoryExpanded,
-                onExpandedChange = { categoryExpanded = !categoryExpanded },
-                modifier = Modifier.weight(1f)
-            ) {
-                OutlinedTextField(
-                    value = selectedCategory.category,
-                    onValueChange = {},
-                    textStyle = TextStyle(color = Color.White),
-                    readOnly = true,
-                    label = { Text("Category") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded)
-                    },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
-                )
-
-                ExposedDropdownMenu(
-                    expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false }
-                ) {
-                    TaskCategory.entries.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it.category, style = TextStyle(color = Color.White)) },
-                            onClick = {
-                                selectedCategory = it
-                                categoryExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // DURATION
-            ExposedDropdownMenuBox(
-                expanded = durationExpanded,
-                onExpandedChange = { durationExpanded = !durationExpanded },
-                modifier = Modifier.weight(1f)
-            ) {
-                OutlinedTextField(
-                    value = selectedDuration,
-                    onValueChange = {},
-                    readOnly = true,
-                    textStyle = TextStyle(color = Color.White),
-                    label = { Text("Duration") },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = durationExpanded)
-                    },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
-                )
-
-                ExposedDropdownMenu(
-                    expanded = durationExpanded,
-                    onDismissRequest = { durationExpanded = false }
-                ) {
-                    listOf("15min", "30min", "45min", "1hr", "1hr30min").forEach {
-                        DropdownMenuItem(
-                            text = { Text(it, style = TextStyle(color = Color.White)) },
-                            onClick = {
-                                selectedDuration = it
-                                durationExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Add Button
-        Button(
-            onClick = {
-                onAddTask(
-                    TaskModel(
-                        id = Uuid.random().toString(),
-                        content = taskName,
-                        duration = selectedDuration,
-                        category = selectedCategory,
-                        date = currentDate,
-                        state = TaskState.TODO,
-                        priority = selectedPriority
-                    )
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text("Add Task")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-}
+// Bottom sheet removed - using QuickAddTaskBar instead
 
 @Composable
 @Preview
 fun DashboardScreenPreview() {
     LevelUpTheme {
-        TaskOverviewCard(
-            tasks =
-                listOf(
-                    TaskModel(
-                        id = "",
-                        content = "text number",
-                        duration = "5hr",
-                        category = TaskCategory.WORKOUT,
-                        date = "",
-                        state = TaskState.DONE,
-                        priority = TaskPriority.LOW
-                    ),
-                    TaskModel(
-                        id = "",
-                        content = "text number",
-                        duration = "5hr",
-                        category = TaskCategory.WORKOUT,
-                        date = "",
-                        state = TaskState.STARTED,
-                        priority = TaskPriority.LOW
-                    ),
-                    TaskModel(
-                        id = "",
-                        content = "text number",
-                        duration = "5hr",
-                        category = TaskCategory.WORKOUT,
-                        date = "",
-                        state = TaskState.TODO,
-                        priority = TaskPriority.LOW
-                    ),
-                    TaskModel(
-                        id = "",
-                        content = "text number",
-                        duration = "5hr",
-                        category = TaskCategory.WORKOUT,
-                        date = "",
-                        state = TaskState.TODO,
-                        priority = TaskPriority.LOW
-                    )
-                ),
-            onNavigate = { }
+        StreakChallengeLabelCard(
+            state = DashboardState(
+                dashboardStreaks = DashboardModel(goalDaysCompleted = 5),
+                daysInChallenge = 2
+            )
         )
     }
 }

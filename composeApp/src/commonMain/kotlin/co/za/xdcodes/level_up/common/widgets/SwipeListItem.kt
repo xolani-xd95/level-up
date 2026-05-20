@@ -104,10 +104,7 @@ fun SwipeListItem(
                         )
                     )
                 }
-                HorizontalDivider(
-                    thickness = DividerDefaults.Thickness,
-                    color = DividerDefaults.color
-                )
+                HorizontalDivider(color = Color(0x1AFFFFFF))
             }
         }
     }
