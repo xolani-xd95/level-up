@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -24,12 +25,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.za.xdcodes.level_up.theme.LevelUpTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CustomTextField(
@@ -38,7 +42,8 @@ fun CustomTextField(
     placeholder: String,
     modifier: Modifier = Modifier,
     prefix: String? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    filter: ((String) -> String)? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -47,20 +52,27 @@ fun CustomTextField(
         mutableStateOf(TextFieldValue(value, TextRange(value.length)))
     }
 
+    val textStyle = TextStyle(
+        color = Color.White,
+        fontSize = 15.sp,
+        lineHeight = 15.sp
+    )
+
     BasicTextField(
         value = textFieldValue,
         onValueChange = { newValue ->
-            textFieldValue = newValue
-            onValueChange(newValue.text)
-
+            val filteredText = filter?.invoke(newValue.text) ?: newValue.text
+            if (filteredText != newValue.text) {
+                textFieldValue = TextFieldValue(filteredText, TextRange(filteredText.length))
+            } else {
+                textFieldValue = newValue
+            }
+            onValueChange(filteredText)
         },
         modifier = modifier,
         singleLine = true,
-        textStyle = TextStyle(
-            color = Color.White,
-            fontSize = 15.sp,
-            lineHeight = 15.sp
-        ),
+        textStyle = textStyle,
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
             onDone = { localFocusManager.clearFocus() }
@@ -78,14 +90,13 @@ fun CustomTextField(
                         else Color.Transparent,
                         shape = RoundedCornerShape(8.dp)
                     )
-                    .padding(horizontal = 12.dp), // ← controls height
+                    .padding(horizontal = 10.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (prefix != null) {
                     Text(
                         text = prefix,
-                        color = Color(0x99FFFFFF),
-                        fontSize = 15.sp
+                        style = textStyle.copy(color = Color(0x99FFFFFF))
                     )
                 }
                 Box(
@@ -95,8 +106,7 @@ fun CustomTextField(
                     if (value.isEmpty()) {
                         Text(
                             text = placeholder,
-                            color = Color(0x44FFFFFF),
-                            fontSize = 15.sp
+                            style = textStyle.copy(color = Color(0x44FFFFFF))
                         )
                     }
                     innerTextField()
@@ -104,6 +114,22 @@ fun CustomTextField(
             }
         }
     )
+}
+
+@Preview
+@Composable
+fun CustomTextFieldPreview() {
+    var text by remember { mutableStateOf("") }
+
+    LevelUpTheme {
+        CustomTextField(
+            value = text,
+            placeholder = "0.00",
+            onValueChange = { text = it },
+            modifier = Modifier.height(40.dp),
+            prefix = "R ",
+        )
+    }
 }
 
 @Composable

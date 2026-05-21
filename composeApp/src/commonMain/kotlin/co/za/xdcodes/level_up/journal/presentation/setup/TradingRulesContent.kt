@@ -54,7 +54,8 @@ fun TradingRulesContent(
             LabeledField(label = "Max trades per day") {
                 CustomTextField(
                     value = state.maxTradesPerDay,
-                    onValueChange = { onAction(JournalSetupActions.OnMaxTradesChanged(it.filter { c -> c.isDigit() })) },
+                    onValueChange = { onAction(JournalSetupActions.OnMaxTradesChanged(it)) },
+                    filter = { it.filter { c -> c.isDigit() } },
                     placeholder = "Recommended: 4",
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 )
@@ -73,8 +74,9 @@ fun TradingRulesContent(
                 ) {
                     CustomTextField(
                         value = state.lossLimitPercent,
-                        onValueChange = {onAction(JournalSetupActions.OnLossLimitChanged(it.filter { c -> c.isDigit() })) },
+                        onValueChange = {onAction(JournalSetupActions.OnLossLimitChanged(it)) },
                         placeholder = "50",
+                        filter = { it.filter { c -> c.isDigit()} },
                         modifier = Modifier.weight(1f).height(48.dp)
                     )
                     Text(
@@ -97,6 +99,7 @@ fun TradingRulesContent(
                         value = state.sessionOneStart,
                         onValueChange = { onAction(JournalSetupActions.OnSessionOneStartChanged(it)) },
                         placeholder = "09:00",
+                        filter = { it.filter { c -> c.isDigit() || c == ':' } },
                         modifier = Modifier.weight(1f).height(48.dp)
                     )
                     Text("to", color = Color(0x99FFFFFF))
@@ -104,6 +107,7 @@ fun TradingRulesContent(
                         value = state.sessionOneEnd,
                         onValueChange = { onAction(JournalSetupActions.OnSessionOneEndChanged(it)) },
                         placeholder = "12:00",
+                        filter = { it.filter { c -> c.isDigit() || c == ':' } },
                         modifier = Modifier.weight(1f).height(48.dp)
                     )
                 }
@@ -120,6 +124,7 @@ fun TradingRulesContent(
                         value = state.sessionTwoStart,
                         onValueChange = { onAction(JournalSetupActions.OnSessionTwoStartChanged(it)) },
                         placeholder = "15:00",
+                        filter = { it.filter { c -> c.isDigit() || c == ':' } },
                         modifier = Modifier.weight(1f).height(48.dp)
                     )
                     Text("to", color = Color(0x99FFFFFF))
@@ -127,6 +132,7 @@ fun TradingRulesContent(
                         value = state.sessionTwoEnd,
                         onValueChange = { onAction(JournalSetupActions.OnSessionTwoEndChanged(it)) },
                         placeholder = "16:30",
+                        filter = { it.filter { c -> c.isDigit() || c == ':' } },
                         modifier = Modifier.weight(1f).height(48.dp)
                     )
                 }

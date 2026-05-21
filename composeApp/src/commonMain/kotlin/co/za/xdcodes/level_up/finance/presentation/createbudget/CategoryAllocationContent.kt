@@ -196,9 +196,10 @@ fun CategoryInputRow(
 
         CustomTextField(
             value = category.amount,
-            onValueChange = { onAmountChange(it.filter { c -> c.isDigit() || c == '.' }) },
+            onValueChange = onAmountChange,
             placeholder = "0.00",
             prefix = "R ",
+            filter = { it.filter { c -> c.isDigit() || c == '.' } },
             modifier = Modifier.weight(0.35f).height(48.dp),
         )
 
