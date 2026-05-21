@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import co.za.xdcodes.level_up.common.formatCurrency
@@ -155,9 +156,10 @@ fun IncomeSourceRow(
         CustomTextField(
             value = source.amount,
             placeholder = "0.00",
-            onValueChange = { onAmountChange(it.filter { c -> c.isDigit() || c == '.' }) },
+            onValueChange = onAmountChange,
             modifier = Modifier.weight(0.4f).height(40.dp),
             prefix = "R ",
+            filter = { it.filter { c -> c.isDigit() || c == '.' } }
         )
 
         if (showRemove) {

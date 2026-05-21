@@ -82,8 +82,9 @@ fun AddTransactionBottomSheet(
             // Amount field
             CustomTextField(
                 value = state.transactionInput.amount,
-                onValueChange = { onAction(TransactionsActions.OnTransactionAmountChanged(it.filter { c -> c.isDigit() })) },
+                onValueChange = { onAction(TransactionsActions.OnTransactionAmountChanged(it)) },
                 placeholder = "0",
+                filter = { it.filter { c -> c.isDigit() || c == '.' } },
                 prefix = "R ",
                 modifier = Modifier.fillMaxWidth().height(48.dp),
             )
@@ -259,9 +260,10 @@ fun EditCategoryBottomSheet(
             // ── Amount field ─────────────────────────────────────
             CustomTextField(
                 value = amount,
-                onValueChange = { amount = it.filter { c -> c.isDigit() } },
+                onValueChange = { amount = it },
                 placeholder = "0",
                 prefix = "R ",
+                filter = { it.filter { c -> c.isDigit() || c == '.' } },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
             )
 
