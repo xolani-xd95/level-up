@@ -48,7 +48,6 @@ import co.za.xdcodes.level_up.journal.domain.model.TradeEntry
 import co.za.xdcodes.level_up.journal.domain.model.TradeStatus
 import co.za.xdcodes.level_up.journal.domain.model.TradingConfig
 import co.za.xdcodes.level_up.theme.LevelUpTheme
-import com.trading.journal.ui.components.TradeCard
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
