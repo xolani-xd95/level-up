@@ -1,4 +1,4 @@
-package co.za.xdcodes.level_up
+package co.za.xdcodez.wealthbuilder
 
 class JsPlatform: Platform {
     override val name: String = "Web with Kotlin/JS"

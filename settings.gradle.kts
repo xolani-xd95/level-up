@@ -1,4 +1,4 @@
-rootProject.name = "Level_up"
+rootProject.name = "WealthBuilder"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

@@ -1,4 +1,4 @@
-package co.za.xdcodes.level_up
+package co.za.xdcodez.wealthbuilder
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
