@@ -67,11 +67,11 @@ kotlin {
 }
 
 android {
-    namespace = "co.za.xdcodes.level_up"
+    namespace = "co.za.xdcodez.wealthbuilder"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "co.za.xdcodes.level_up"
+        applicationId = "co.za.xdcodez.wealthbuilder"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

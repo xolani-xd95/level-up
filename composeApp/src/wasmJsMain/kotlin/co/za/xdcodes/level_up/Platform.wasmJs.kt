@@ -1,4 +1,4 @@
-package co.za.xdcodes.level_up
+package co.za.xdcodez.wealthbuilder
 
 class WasmPlatform: Platform {
     override val name: String = "Web with Kotlin/Wasm"
