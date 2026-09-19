@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import co.za.xdcodez.wealthbuilder.finance.presentation.dashboard.BudgetDashboardRoute
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetOverview.BudgetScreenRoute
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetOverview.BudgetScreenViewModel
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetTransactions.BudgetTransactionScreenRoute
@@ -29,11 +30,11 @@ import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeActions
 import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeNavigationEvent
 import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeScreenRoute
 import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeViewModel
-import co.za.xdcodez.wealthbuilder.journal.presentation.setup.JournalSetupScreenRoute
-import co.za.xdcodez.wealthbuilder.journal.presentation.setup.JournalSetupViewModel
+import co.za.xdcodez.wealthbuilder.navigation.Destination.BudgetOverviewDestination
 import co.za.xdcodez.wealthbuilder.navigation.Destination.BudgetTransactionsDestination
-import co.za.xdcodez.wealthbuilder.navigation.Destination.JournalConfigDestination
 import co.za.xdcodez.wealthbuilder.navigation.Destination.SetupBudgetDestination
+import co.za.xdcodez.wealthbuilder.navigation.Destination.CreateGoalDestination
+import co.za.xdcodez.wealthbuilder.navigation.Destination.GoalDetailDestination
 import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -49,14 +50,28 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
             /**
              * Finance navigation screens
              * */
-            composable(BottomNavDestination.Finance.route) { entry ->
+            composable(BottomNavDestination.Finance.route) {
+                BudgetDashboardRoute(
+                    onNavigateToBudgetDetails = {
+                        navController.navigate(BudgetOverviewDestination.route)
+                    },
+                    onNavigateToCreateGoal = {
+                        navController.navigate(CreateGoalDestination.route)
+                    },
+                    onNavigateToGoalDetail = { goalId ->
+                        navController.navigate(GoalDetailDestination.createRoute(goalId))
+                    }
+                )
+            }
+
+            composable(BudgetOverviewDestination.route) { entry ->
                 val viewModel: BudgetScreenViewModel = entry.sharedViewModel(
                     navController,
                     BottomNavDestination.Finance.route
                 )
                 val navBackStack by navController.currentBackStackEntryAsState()
                 LaunchedEffect(navBackStack?.destination?.route) {
-                    if (navBackStack?.destination?.route == BottomNavDestination.Finance.route) {
+                    if (navBackStack?.destination?.route == BudgetOverviewDestination.route) {
                         viewModel.onReturnFromSetup()
                     }
                 }
@@ -128,11 +143,6 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
                     viewModel,
                     onNavigate = { event ->
                         when (event) {
-                            is JournalHomeNavigationEvent.ToSetup -> {
-                                navController.navigate(
-                                    JournalConfigDestination.route
-                                )
-                            }
                             is JournalHomeNavigationEvent.ToDayDetail -> {
                                 navController.navigate(
                                     Destination.JournalDayDetailDestination.createRoute(
@@ -177,19 +187,6 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
                     }
                 )
             }
-            composable(JournalConfigDestination.route) { entry ->
-                val viewModel: JournalSetupViewModel = entry.sharedViewModel(
-                    navController,
-                    BottomNavDestination.Journal.route
-                )
-                JournalSetupScreenRoute(
-                    monthIndex = 1,
-                    year = 2026,
-                    journalSetupViewModel = viewModel,
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
-
             /**
              * Habits navigation screens
              * */

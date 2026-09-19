@@ -8,8 +8,11 @@ import co.za.xdcodez.wealthbuilder.habits.domain.model.QuarterlyGoal
 import co.za.xdcodez.wealthbuilder.habits.domain.model.WeeklyRollup
 import dev.gitlive.firebase.firestore.FirebaseFirestore
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 
 class FirebaseHabitsRepositoryImpl(
@@ -444,7 +447,7 @@ class FirebaseHabitsRepositoryImpl(
         if (!snapshot.exists) {
             // Initialize new week document
             val weekStartDate = LocalDate.parse(weekStart)
-            val weekEndDate = LocalDate(weekStartDate.year, weekStartDate.monthNumber, weekStartDate.dayOfMonth + 6)
+            val weekEndDate = weekStartDate.plus(6, DateTimeUnit.DAY)
             val weekNum = calculateWeekNumber(quarter, weekStartDate)
 
             weekDocRef.set(
@@ -525,7 +528,7 @@ class FirebaseHabitsRepositoryImpl(
         if (!snapshot.exists) {
             // Initialize new week document
             val weekStartDate = LocalDate.parse(weekStart)
-            val weekEndDate = LocalDate(weekStartDate.year, weekStartDate.monthNumber, weekStartDate.dayOfMonth + 6)
+            val weekEndDate = weekStartDate.plus(6, DateTimeUnit.DAY)
             val weekNum = calculateWeekNumber(quarter, weekStartDate)
 
             weekDocRef.set(
@@ -556,13 +559,13 @@ class FirebaseHabitsRepositoryImpl(
 
     private fun getWeekStart(date: LocalDate): LocalDate {
         val dayOfWeek = date.dayOfWeek.ordinal  // Monday=0, Sunday=6
-        return LocalDate(date.year, date.monthNumber, date.dayOfMonth - dayOfWeek)
+        return date.minus(dayOfWeek, DateTimeUnit.DAY)
     }
 
     private fun getNextMonday(date: LocalDate): LocalDate {
         val dayOfWeek = date.dayOfWeek.ordinal  // Monday=0, Sunday=6
         val daysUntilMonday = if (dayOfWeek == 0) 0 else (7 - dayOfWeek)
-        return LocalDate(date.year, date.monthNumber, date.dayOfMonth + daysUntilMonday)
+        return date.plus(daysUntilMonday, DateTimeUnit.DAY)
     }
 
     private fun calculateWeekNumber(quarter: String, weekStartDate: LocalDate): Int {

@@ -146,7 +146,17 @@ fun SummaryCategoryCardComposable(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color.White.copy(alpha = 0.05f))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.3f),
+                        Color.White.copy(alpha = 0.2f),
+                        Color.White.copy(alpha = 0.1f),
+                        Color.White.copy(alpha = 0.5f),
+                        Color.White.copy(alpha = 0.2f),
+                    )
+                )
+            )
             .padding(start = 8.dp, end = 8.dp, top = 4.dp)
     ) {
         Row(

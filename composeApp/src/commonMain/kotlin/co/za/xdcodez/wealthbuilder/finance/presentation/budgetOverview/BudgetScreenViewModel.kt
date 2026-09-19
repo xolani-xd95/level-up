@@ -74,6 +74,7 @@ class BudgetScreenViewModel(
         _state.update {
             it.copy(
                 selectedPeriod = newPeriod,
+                currentPeriod = newPeriod,
                 selectedMonth = null,
                 budgetCategories = emptyList()
             )

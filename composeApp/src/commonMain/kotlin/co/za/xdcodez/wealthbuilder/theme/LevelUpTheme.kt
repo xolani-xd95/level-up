@@ -45,6 +45,7 @@ private fun gradientOption0() = Brush.linearGradient(
         Color(0xff495057),
         Color(0xff363636),
         Color(0xff363636),
+        Color(0xff495057),
         Color(0xff1B1B1B),
         Color(0xff000000),
     ),

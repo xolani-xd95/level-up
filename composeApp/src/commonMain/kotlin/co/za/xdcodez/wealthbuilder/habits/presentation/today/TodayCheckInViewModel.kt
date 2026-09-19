@@ -9,8 +9,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 
 class TodayCheckInViewModel(
@@ -31,7 +34,7 @@ class TodayCheckInViewModel(
 
         // Calculate current week boundaries (Monday-Sunday)
         val weekStart = getWeekStart(today)
-        val weekEnd = LocalDate(weekStart.year, weekStart.monthNumber, weekStart.dayOfMonth + 6)
+        val weekEnd = weekStart.plus(6, DateTimeUnit.DAY)
 
         // Load quarter metadata from Firebase
         var quarterData = repository.getQuarter(quarter)
@@ -103,7 +106,7 @@ class TodayCheckInViewModel(
 
     private fun getWeekStart(date: LocalDate): LocalDate {
         val dayOfWeek = date.dayOfWeek.ordinal
-        return LocalDate(date.year, date.monthNumber, date.dayOfMonth - dayOfWeek)
+        return date.minus(dayOfWeek, DateTimeUnit.DAY)
     }
 
     fun onAction(action: TodayCheckInAction) {

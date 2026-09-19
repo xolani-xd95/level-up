@@ -3,6 +3,7 @@ package co.za.xdcodez.wealthbuilder.finance.presentation.createbudget
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.za.xdcodez.wealthbuilder.common.budgetPeriodFromMonthId
+import co.za.xdcodez.wealthbuilder.common.getPreviousMonthId
 import co.za.xdcodez.wealthbuilder.finance.domain.BudgetRepository
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.BudgetCategoryInput
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.BudgetMonthModel
@@ -22,6 +23,16 @@ class CreateBudgetViewModel(
     fun init(monthId: String) {
         val period = budgetPeriodFromMonthId(monthId)
         _state.update { it.copy(budgetPeriod = period) }
+
+        // Load previous month's rollover if available
+        viewModelScope.launch {
+            val rolloverSource = calculatePreviousMonthRollover(monthId)
+            if (rolloverSource != null) {
+                _state.update {
+                    it.copy(incomeSources = it.incomeSources + rolloverSource)
+                }
+            }
+        }
     }
 
     fun onAction(action: CreateBudgetActions) {
@@ -141,6 +152,27 @@ class CreateBudgetViewModel(
             } else {
                 _state.update { it.copy(error = "Failed to save budget. Please try again") }
             }
+        }
+    }
+
+    private suspend fun calculatePreviousMonthRollover(currentMonthId: String): IncomeSourceInput? {
+        return try {
+            val previousMonthId = getPreviousMonthId(currentMonthId)
+            val previousMonth = repository.getMonth(previousMonthId) ?: return null
+
+            val rollover = previousMonth.moneyIn - previousMonth.moneyOut
+
+            // Only add rollover if there's actually money left over (or debt carried forward)
+            if (rollover == 0.0) return null
+
+            IncomeSourceInput(
+                name = "Previous Month",
+
+//                amount = String.format("%.2f", rollover)
+            )
+        } catch (e: Exception) {
+            // If we can't calculate rollover (first month, error, etc.), just skip it
+            null
         }
     }
 }

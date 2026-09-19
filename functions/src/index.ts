@@ -186,3 +186,27 @@ function parseInsight(raw: string): AgentInsight {
     };
   }
 }
+//
+//
+// // Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
+//
+// // Your web app's Firebase configuration
+// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// const firebaseConfig = {
+//   apiKey: "AIzaSyCqECqb4EYlg7Hm7u8kDBztvwhlhqeWzvc",
+//   authDomain: "wealth-bui.firebaseapp.com",
+//   databaseURL: "https://wealth-bui-default-rtdb.firebaseio.com",
+//   projectId: "wealth-bui",
+//   storageBucket: "wealth-bui.firebasestorage.app",
+//   messagingSenderId: "628298201556",
+//   appId: "1:628298201556:web:3994015cf5d4b9384f3e41",
+//   measurementId: "G-X188JYZS2X"
+// };
+//
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);

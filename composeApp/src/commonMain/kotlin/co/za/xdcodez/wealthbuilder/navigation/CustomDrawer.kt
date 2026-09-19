@@ -24,12 +24,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import wealthbuilder.composeapp.generated.resources.Res
-import wealthbuilder.composeapp.generated.resources.ic_exercise
 import wealthbuilder.composeapp.generated.resources.ic_finance
 import wealthbuilder.composeapp.generated.resources.ic_gym
-import wealthbuilder.composeapp.generated.resources.ic_habits
 import wealthbuilder.composeapp.generated.resources.ic_impulse
-import wealthbuilder.composeapp.generated.resources.ic_profile
 
 @Composable
 fun ModernBottomNavigationBar(

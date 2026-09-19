@@ -2,7 +2,7 @@ package co.za.xdcodez.wealthbuilder.journal.data
 
 import co.za.xdcodez.wealthbuilder.journal.data.model.MonthlyTradingTarget
 import co.za.xdcodez.wealthbuilder.journal.domain.JournalRepository
-import co.za.xdcodez.wealthbuilder.journal.domain.model.DailyPoint
+import co.za.xdcodez.wealthbuilder.journal.domain.model.AccountBalance
 import co.za.xdcodez.wealthbuilder.journal.domain.model.OverrideReason
 import co.za.xdcodez.wealthbuilder.journal.domain.model.TradeDirection
 import co.za.xdcodez.wealthbuilder.journal.domain.model.TradeEntry
@@ -29,13 +29,18 @@ class FirebaseTradingRepositoryImpl(
 //            val doc = snapshot.data<TradingConfigDocument>()
 //            doc.toDomain()
             TradingConfig(
+                startingBalance = snapshot.get("startingBalance") ?: 0.0,
+                cycleStartDate = snapshot.get("cycleStartDate") ?: "2026-07-27",
+                cycleEndDate = snapshot.get("cycleEndDate") ?: "2026-11-30",
                 maxTradesPerDay = snapshot.get("maxTradesPerDay") ?: 4,
-                lossLimitPercent = snapshot.get("lossLimitPercent") ?: 0.5,
+                lossLimitPercent = snapshot.get("lossLimitPercent") ?: 0.03,
+                profitCeilingPercent = snapshot.get("profitCeilingPercent") ?: 0.05,
                 sessionOneStart = snapshot.get("sessionOneStart") ?: "09:00",
                 sessionOneEnd = snapshot.get("sessionOneEnd") ?: "12:00",
                 sessionTwoStart = snapshot.get("sessionTwoStart") ?: "15:00",
                 sessionTwoEnd = snapshot.get("sessionTwoEnd") ?: "16:30",
-                isConfigured = snapshot.get("isConfigured") ?: false
+                isConfigured = snapshot.get("isConfigured") ?: true
+
             )
         } catch (e: Exception) {
             null
@@ -158,36 +163,20 @@ class FirebaseTradingRepositoryImpl(
         Result.failure(e)
     }
 
-    // ── Daily Points ─────────────────────────────────────────────
-
-    override suspend fun getDailyPoints(month: Int, year: Int): List<DailyPoint> {
+    override suspend fun getAllTradesInCycle(startDate: String, endDate: String): List<TradeEntry> {
         return try {
-            val startDate = "$year-${month.toString().padStart(2, '0')}-01"
-            val nextMonth = if (month == 12) 1 else month + 1
-            val nextYear = if (month == 12) year + 1 else year
-            val endDate = "$nextYear-${nextMonth.toString().padStart(2, '0')}-01"
-
             val snapshot = firestore
-                .collection("dailyPoints")
+                .collection("trades")
                 .where { "date" greaterThanOrEqualTo startDate }
-                .where { "date" lessThan endDate }
+                .where { "date" lessThanOrEqualTo endDate }
                 .get()
 
-            snapshot.documents.map { doc -> doc.toDailyPoint() }
+            snapshot.documents.map { doc -> doc.toTradeEntry() }
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    override suspend fun saveDailyPoint(point: DailyPoint): Result<Unit> = try {
-        firestore
-            .collection("dailyPoints")
-            .document(point.date)
-            .set(point.toDocument())
-        Result.success(Unit)
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
     // ── Mappers ──────────────────────────────────────────────────
 
     private fun DocumentSnapshot.toTradeEntry(): TradeEntry = TradeEntry(
@@ -205,9 +194,9 @@ class FirebaseTradingRepositoryImpl(
         wasOverride = get("wasOverride") ?: false,
         overrideReason = get<String?>("overrideReason")
             ?.let { OverrideReason.valueOf(it) },
-        openTime  = get("openTime")  ?: "",   // ← new
+        openTime = get("openTime") ?: "",   // ← new
         closeTime = get("closeTime") ?: "",   // ← new
-        session   = get("session")   ?: "MANUAL" // ← new
+        session = get("session") ?: "MANUAL" // ← new
     )
 
     private fun TradeEntry.toDocument(): Map<String, Any?> = mapOf(
@@ -228,8 +217,12 @@ class FirebaseTradingRepositoryImpl(
 
 
     private fun TradingConfig.toDocument(): Map<String, Any> = mapOf(
+        "startingBalance" to startingBalance,
+        "cycleStartDate" to cycleStartDate,
+        "cycleEndDate" to cycleEndDate,
         "maxTradesPerDay" to maxTradesPerDay,
         "lossLimitPercent" to lossLimitPercent,
+        "profitCeilingPercent" to profitCeilingPercent,
         "sessionOneStart" to sessionOneStart,
         "sessionOneEnd" to sessionOneEnd,
         "sessionTwoStart" to sessionTwoStart,
@@ -237,15 +230,24 @@ class FirebaseTradingRepositoryImpl(
         "isConfigured" to isConfigured
     )
 
-    private fun DocumentSnapshot.toDailyPoint(): DailyPoint = DailyPoint(
-        date = id,                          // document ID is the date
-        earned = get("earned") ?: false,
-        reason = get("reason") ?: ""
-    )
+    // ── Account Balance (EA synced) ─────────────────────────────
 
-    private fun DailyPoint.toDocument(): Map<String, Any> = mapOf(
-        "date" to date,
-        "earned" to earned,
-        "reason" to reason
-    )
+    override suspend fun getAccountBalance(): AccountBalance? {
+        return try {
+            val snapshot = firestore
+                .collection("accounts")
+                .document("476177802")
+                .get()
+
+            if (!snapshot.exists) return null
+
+            AccountBalance(
+                accountNumber = snapshot.get("accountNumber") ?: 0,
+                balance = snapshot.get("balance") ?: 0.0,
+                updatedAt = snapshot.get("updatedAt") ?: ""
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

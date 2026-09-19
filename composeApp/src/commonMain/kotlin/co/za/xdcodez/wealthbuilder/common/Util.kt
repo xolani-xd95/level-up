@@ -97,6 +97,15 @@ fun budgetPeriodFromMonthId(monthId: String): BudgetPeriod {
 }
 
 /**
+ * Get the previous month's ID from a given monthId
+ */
+fun getPreviousMonthId(monthId: String): String {
+    val currentPeriod = budgetPeriodFromMonthId(monthId)
+    val previousPeriod = getPreviousBudgetPeriod(currentPeriod)
+    return previousPeriod.monthId
+}
+
+/**
  * @deprecated Use BudgetPeriod.monthId instead
  */
 fun monthId(monthIndex: Int, year: Int): String {
@@ -121,4 +130,11 @@ fun String.toFormattedDate(): String {
     } catch (e: Exception) {
         this
     }
+}
+
+fun getRemainingMessage(current: Double, target: Double): String {
+    if (target <= 0.0) return ""
+    val remaining = (target - current).coerceAtLeast(0.0)
+    return if (current >= target) "Target hit — stop for today"
+    else "${formatCurrency(remaining)} to go"
 }

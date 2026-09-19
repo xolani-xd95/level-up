@@ -1,5 +1,7 @@
 package co.za.xdcodez.wealthbuilder.habits.presentation.today
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,15 +24,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,8 +47,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -48,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.za.xdcodez.wealthbuilder.common.formatCurrency
@@ -121,19 +134,26 @@ fun TodayCheckInScreen(
             dayNumber = state.quarterDayNumber
         )
 
-        state.currentDate?.let { today ->
-            WeeklyProgressSection(
-                today = today,
-                goals = state.quarterlyGoals,
-                weekRollup = state.currentWeekRollup,
-                focusBlocksCompleted = state.focusBlocksCompletedToday,
-                onAction = onAction
-            )
-        }
+//        state.currentDate?.let { today ->
+//            WeeklyProgressSection(
+//                today = today,
+//                goals = state.quarterlyGoals,
+//                weekRollup = state.currentWeekRollup,
+//                focusBlocksCompleted = state.focusBlocksCompletedToday,
+//                onAction = onAction
+//            )
+//        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        QuarterlyProgressSection(goals = state.quarterlyGoals)
+        state.currentDate?.let { today ->
+            QuarterlyProgressSection(
+                today = today,
+                goals = state.quarterlyGoals,
+                weeklyRollUp = state.currentWeekRollup,
+                onAction = onAction
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
     }
@@ -156,46 +176,11 @@ fun QuarterDayHeader(
             color = Color.White
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 14.sp,
-                            color = Color.White.copy(alpha = 0.5f)
-                        )
-                    ) {
-                        append("wins: ")
-                    }
-                    withStyle(style = SpanStyle(fontSize = 18.sp, color = Gold)) {
-                        append("$completedDays")
-                    }
-                })
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontSize = 14.sp, color = Color(0x99FFFFFF))) {
-                        append("goal: ")
-                    }
-                    withStyle(style = SpanStyle(fontSize = 16.sp, color = Color(0x99FFFFFF))) {
-                        append("$totalDays")
-                    }
-                })
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        LinearProgressIndicator(
-            progress = { (completedDays.toFloat() / totalDays.toFloat()).coerceIn(0f, 1f) },
-            modifier = Modifier.fillMaxWidth().height(8.dp),
-            strokeCap = StrokeCap.Round,
-            color = Gold,
-            trackColor = Color.White.copy(alpha = 0.08f)
-        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 horizontalAlignment = CenterHorizontally,
@@ -209,6 +194,11 @@ fun QuarterDayHeader(
                 )
             }
 
+            GaugeArcProgress(
+                current = completedDays,
+                target = totalDays
+            )
+
             Column(
                 horizontalAlignment = CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -216,13 +206,12 @@ fun QuarterDayHeader(
                 val missedDays = ((dayNumber - 1) - completedDays).coerceAtLeast(0)
                 Text("$missedDays", color = Color.Red)
                 Text(
-                    "missed days",
+                    "losses",
                     color = Color.White.copy(alpha = 0.5f),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -233,22 +222,103 @@ fun QuarterDayHeader(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-//            Icon(
-//                painter = painterResource(Res.drawable.ic_impulse),
-////                imageVector = Icons.Filled.CheckCircle,
-//                contentDescription = "consistency",
-//                modifier = Modifier.size(20.dp),
-//                tint = Color.White.copy(alpha = 0.8f)
-//            )
-//            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = ("🔥 " + getDisciplineMessage(completedDays)) + " 🔥",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.8f)
             )
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(vertical =4.dp, horizontal = 16.dp)
+                .clickable(onClick =  { }),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_impulse),
+                contentDescription = "Impulse Control",
+                tint = Color.White,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "I controlled my impulses today",
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
     Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+fun GaugeArcProgress(
+    current: Int,
+    target: Int,
+    modifier: Modifier = Modifier,
+    size: Dp = 130.dp,
+    strokeWidth: Dp = 8.dp,
+    startAngle: Float = 150f,
+    sweepAngle: Float = 245f,
+) {
+    val progress = (current.toFloat() / target.toFloat()).coerceIn(0f, 1f)
+
+    Box(
+        modifier = modifier.size(size),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
+            val arcSize = Size(
+                width = size.toPx() - strokeWidth.toPx(),
+                height = size.toPx() - strokeWidth.toPx()
+            )
+            val topLeft = Offset(strokeWidth.toPx() / 2, strokeWidth.toPx() / 2)
+
+            // Track (full gauge range, dim)
+            drawArc(
+                color = Color.White.copy(alpha = 0.08f),
+                startAngle = startAngle,
+                sweepAngle = sweepAngle,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = stroke
+            )
+
+            // Progress (fills proportionally from startAngle)
+            drawArc(
+                color = Gold,
+                startAngle = startAngle,
+                sweepAngle = sweepAngle * progress,
+                useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
+                style = stroke
+            )
+        }
+
+        Column(
+            horizontalAlignment = CenterHorizontally,
+            modifier = Modifier.padding(bottom = size * 0.08f)
+        ) {
+            Text(
+                text = "$current",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "of $target wins",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White.copy(alpha = 0.5f)
+            )
+        }
+    }
 }
 
 @Composable
@@ -451,7 +521,12 @@ fun WeeklyHabitRing(
 }
 
 @Composable
-fun QuarterlyProgressSection(goals: List<QuarterlyGoal>) {
+fun QuarterlyProgressSection(
+    today: LocalDate,
+    goals: List<QuarterlyGoal>,
+    weeklyRollUp: WeeklyRollup?,
+    onAction: (TodayCheckInAction) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -468,14 +543,173 @@ fun QuarterlyProgressSection(goals: List<QuarterlyGoal>) {
             val quarterGoals = goals.filter { it.habitKey != HabitKey.IMPULSE_CONTROL }
             items(quarterGoals.size) { index ->
                 val goal = quarterGoals[index]
-                ProgressGoalCard(goal)
+                val weeklyTarget = goal.weeklyTarget?.toInt() ?: 0
+                val isComplete = goal.isDoneToday(today)
+                ProgressGoalCard(
+                    goal,
+                    weeklyRollup = weeklyRollUp,
+                    weekTarget = weeklyTarget,
+                    loggedToday = isComplete,
+                    onLogToday = onAction
+                )
             }
         }
     }
 }
 
+
+//@Composable
+//fun ProgressGoalCard(goal: QuarterlyGoal) {
+//    val icons = when (goal.type) {
+//        GoalType.SAVINGS -> Res.drawable.ic_finance
+//        else -> {
+//            when (goal.habitKey) {
+//                HabitKey.FOCUS -> Res.drawable.ic_brain
+//                HabitKey.IMPULSE_CONTROL -> Res.drawable.ic_impulse
+//                HabitKey.GYM -> Res.drawable.ic_exercise
+//                else -> Res.drawable.ic_exercise
+//            }
+//        }
+//    }
+//    Row(
+//        modifier = Modifier.fillMaxWidth()
+//            .clip(RoundedCornerShape(8.dp))
+//            .background(Color.White.copy(alpha = 0.05f))
+//            .padding(8.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        if (LocalInspectionMode.current) {
+//            Icon(
+//                imageVector = Icons.Filled.CheckCircle,
+//                contentDescription = "goal.title",
+//                tint = Color.White.copy(alpha = 0.4f),
+//                modifier = Modifier.size(44.dp).padding(end = 12.dp)
+//            )
+//        } else {
+//            Icon(
+//                painter = painterResource(icons),
+//                contentDescription = "goal.title",
+//                tint = Gold,
+//                modifier = Modifier.size(40.dp).padding(end = 12.dp)
+//            )
+//        }
+//
+//        Column(
+//            modifier = Modifier.weight(1f)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                Text(
+//                    text = goal.title,
+//                    style = MaterialTheme.typography.bodyMedium,
+//                )
+//                val progress =
+//                    ((goal.currentValue ?: 0.0) / (goal.targetValue ?: 0.0) * 100).toInt()
+//                Text(
+//                    text = "$progress%",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = Gold
+//                )
+//            }
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth()
+//                    .padding(vertical = 4.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.spacedBy(4.dp)
+//            ) {
+//                repeat(5) { index ->
+//                    Box(
+//                        modifier = Modifier
+//                            .size(10.dp)
+//                            .background(
+//                                color = if (index < 5) Gold
+//                                else Color.White.copy(alpha = 0.2f),
+//                                shape = CircleShape
+//                            )
+//                    )
+//                }
+//
+//                Spacer(modifier = Modifier.weight(1f))
+//                Text(
+//                    "this week",
+//                    style = MaterialTheme.typography.bodySmall,
+//                    color = Color.White.copy(alpha = 0.5f)
+//                )
+//            }
+//            when (goal.type) {
+//                GoalType.SAVINGS -> {
+//                    Text(buildAnnotatedString {
+//                        withStyle(SpanStyle(fontSize = 15.sp, color = Gold)) {
+//                            append(formatCurrency(goal.currentValue ?: 0.0))
+//                        }
+//                        withStyle(SpanStyle(fontSize = 13.sp, color = Color(0x99FFFFFF))) {
+//                            append(" / ${formatCurrency(goal.targetValue ?: 0.0)}")
+//                        }
+//                    })
+//                }
+//
+//                else -> {
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Text(buildAnnotatedString {
+//                            withStyle(SpanStyle(fontSize = 13.sp, color = Color(0x99FFFFFF))) {
+//                                append("streak: ")
+//                            }
+//                            withStyle(SpanStyle(fontSize = 15.sp, color = Gold)) {
+//                                append("${goal.currentValue?.toInt()}")
+//                            }
+//                        })
+//                        Text(buildAnnotatedString {
+//                            withStyle(
+//                                SpanStyle(
+//                                    fontSize = 13.sp,
+//                                    color = Color(0x99FFFFFF)
+//                                )
+//                            ) {
+//                                append("goal: ")
+//                            }
+//                            withStyle(
+//                                SpanStyle(
+//                                    fontSize = 15.sp,
+//                                    color = Color(0x99FFFFFF)
+//                                )
+//                            ) {
+//                                append("${goal.targetValue?.toInt()}")
+//                            }
+//                        })
+//                    }
+//                }
+//            }
+//
+//            LinearProgressIndicator(
+//                strokeCap = StrokeCap.Round,
+//                progress = {
+//                    ((goal.currentValue ?: 0.0) / (goal.targetValue ?: 0.0)).toFloat()
+//                        .coerceIn(0f, 1f)
+//                },
+//                color = Gold,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(6.dp),
+//            )
+//        }
+//        RadioButton(selected = false, onClick = {})
+//    }
+//}
+
 @Composable
-fun ProgressGoalCard(goal: QuarterlyGoal) {
+fun ProgressGoalCard(
+    goal: QuarterlyGoal,
+    weeklyRollup: WeeklyRollup?,
+    weekTarget: Int = 0,
+    loggedToday: Boolean = false,
+    onLogToday: (TodayCheckInAction) -> Unit = {}
+) {
     val icons = when (goal.type) {
         GoalType.SAVINGS -> Res.drawable.ic_finance
         else -> {
@@ -487,6 +721,13 @@ fun ProgressGoalCard(goal: QuarterlyGoal) {
             }
         }
     }
+
+    val weekCompletedCount = when (goal.habitKey) {
+        HabitKey.GYM -> weeklyRollup?.gymDays ?: 0
+        HabitKey.CARDIO -> weeklyRollup?.cardioDays ?: 0
+        HabitKey.FOCUS -> weeklyRollup?.focusDays ?: 0
+        else -> 0
+    }
     Row(
         modifier = Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
@@ -497,18 +738,19 @@ fun ProgressGoalCard(goal: QuarterlyGoal) {
         if (LocalInspectionMode.current) {
             Icon(
                 imageVector = Icons.Filled.CheckCircle,
-                contentDescription = "goal.title",
+                contentDescription = goal.title,
                 tint = Color.White.copy(alpha = 0.4f),
                 modifier = Modifier.size(44.dp).padding(end = 12.dp)
             )
         } else {
             Icon(
                 painter = painterResource(icons),
-                contentDescription = "goal.title",
+                contentDescription = goal.title,
                 tint = Gold,
                 modifier = Modifier.size(40.dp).padding(end = 12.dp)
             )
         }
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -521,13 +763,66 @@ fun ProgressGoalCard(goal: QuarterlyGoal) {
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                val progress =
-                    ((goal.currentValue ?: 0.0) / (goal.targetValue ?: 0.0) * 100).toInt()
-                Text(
-                    text = "$progress%",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Gold
-                )
+
+                if (goal.type != GoalType.SAVINGS) {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckCircle,
+                        contentDescription = if (loggedToday) "Logged" else "Log impulse control",
+                        tint = if (loggedToday) Gold else Color.White.copy(alpha = 0.4f),
+                        modifier = Modifier.size(18.dp).clickable(
+                            onClick = {
+                                if (!loggedToday) onLogToday(
+                                    when (goal.habitKey) {
+                                        HabitKey.GYM -> TodayCheckInAction.OnGymTap
+                                        HabitKey.CARDIO -> TodayCheckInAction.OnCardioTap
+                                        else -> TodayCheckInAction.OnFocusBlockTap(3)
+                                    }
+                                )
+                            }
+                        )
+                    )
+                } else {
+                    val progress =
+                        ((goal.currentValue ?: 0.0) / (goal.targetValue ?: 0.0) * 100).toInt()
+                    Text(
+                        text = "$progress%",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Gold
+                    )
+                }
+            }
+
+            // This week — a count of completions, not specific days (that data isn't tracked).
+            // Objectives like savings don't have a weekly cadence at all.
+            if (goal.type != GoalType.SAVINGS && weekTarget > 0) {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(top = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    repeat(weekTarget) { index ->
+                        val completed = index < weekCompletedCount
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .background(
+                                    color = if (completed) Gold
+                                    else Color.White.copy(alpha = 0.2f),
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        if (weekTarget == weekCompletedCount) "week completed" else "week ongoing",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (weekTarget == weekCompletedCount) Gold else Color.White.copy(
+                            alpha = 0.5f
+                        )
+                    )
+                }
             }
             when (goal.type) {
                 GoalType.SAVINGS -> {
@@ -585,11 +880,13 @@ fun ProgressGoalCard(goal: QuarterlyGoal) {
                 color = Gold,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 2.dp)
                     .height(6.dp),
             )
         }
     }
 }
+
 
 @Composable
 fun MilestoneGoalCard(
@@ -650,6 +947,7 @@ fun PreviewTodayCheckInScreen() {
                         type = GoalType.METRIC_MANUAL,
                         targetValue = 50.0,
                         currentValue = 2.0,
+                        weeklyTarget = 4.0,
                         quarter = "2026-Q3"
                     ),
                     QuarterlyGoal(
