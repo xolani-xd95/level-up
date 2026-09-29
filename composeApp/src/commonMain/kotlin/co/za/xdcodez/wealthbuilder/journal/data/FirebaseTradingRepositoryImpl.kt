@@ -26,8 +26,6 @@ class FirebaseTradingRepositoryImpl(
 
             if (!snapshot.exists) return null
 
-//            val doc = snapshot.data<TradingConfigDocument>()
-//            doc.toDomain()
             TradingConfig(
                 startingBalance = snapshot.get("startingBalance") ?: 0.0,
                 cycleStartDate = snapshot.get("cycleStartDate") ?: "2026-07-27",
@@ -236,7 +234,7 @@ class FirebaseTradingRepositoryImpl(
         return try {
             val snapshot = firestore
                 .collection("accounts")
-                .document("476177802")
+                .document("134712069")
                 .get()
 
             if (!snapshot.exists) return null

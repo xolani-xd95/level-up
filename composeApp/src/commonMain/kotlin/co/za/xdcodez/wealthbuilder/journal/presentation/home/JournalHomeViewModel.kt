@@ -2,7 +2,8 @@ package co.za.xdcodez.wealthbuilder.journal.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.za.xdcodez.wealthbuilder.common.monthId
+import co.za.xdcodez.wealthbuilder.common.PAYDAY
+import co.za.xdcodez.wealthbuilder.home.HomeNavigationEvent
 import co.za.xdcodez.wealthbuilder.journal.domain.JournalRepository
 import co.za.xdcodez.wealthbuilder.journal.domain.model.TradingConfig
 import co.za.xdcodez.wealthbuilder.journal.domain.model.WeekDayStatus
@@ -24,7 +25,7 @@ class JournalHomeViewModel(
     private val _state = MutableStateFlow(JournalHomeState())
     val state = _state.asStateFlow()
 
-    private val _navigationEvent = MutableSharedFlow<JournalHomeNavigationEvent>()
+    private val _navigationEvent = MutableSharedFlow<HomeNavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
     init {
@@ -47,7 +48,7 @@ class JournalHomeViewModel(
             is JournalHomeActions.OnDayClicked -> {
                 if (action.day.status != WeekDayStatus.FUTURE) {
                     emitNavEvent(
-                        ToDayDetail(
+                        HomeNavigationEvent.NavigateToDayDetails(
                             date = action.day.date,
                             monthIndex = _state.value.selectedMonthIndex,
                             year = _state.value.selectedYear
@@ -95,7 +96,7 @@ class JournalHomeViewModel(
 
             val config = repository.getConfig()
             val monthlyTarget = repository.getMonthlyTarget(
-                monthId(state.selectedMonthIndex, state.selectedYear)
+                "${state.selectedYear}-${state.selectedMonthIndex.toString().padStart(2, '0')}-$PAYDAY"
             )
             val allTrades = repository.getTrades(
                 month = state.selectedMonthIndex,
@@ -129,7 +130,7 @@ class JournalHomeViewModel(
         }
     }
 
-    private fun emitNavEvent(event: JournalHomeNavigationEvent) {
+    private fun emitNavEvent(event: HomeNavigationEvent) {
         viewModelScope.launch {
             _navigationEvent.emit(event)
         }

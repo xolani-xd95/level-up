@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -49,7 +50,7 @@ fun BudgetCategoryCardComposable(
         .toFloat()
 
     CardComposable(
-        modifier = modifier
+        modifier = modifier.shadow(18.dp, RoundedCornerShape(8.dp))
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -141,23 +142,9 @@ fun SummaryCategoryCardComposable(
         .toFloat()
 
     val progressColor = budgetProgressColor(progress)
-    val shape = RoundedCornerShape(8.dp)
 
-    Column(
+    CardComposable(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.3f),
-                        Color.White.copy(alpha = 0.2f),
-                        Color.White.copy(alpha = 0.1f),
-                        Color.White.copy(alpha = 0.5f),
-                        Color.White.copy(alpha = 0.2f),
-                    )
-                )
-            )
-            .padding(start = 8.dp, end = 8.dp, top = 4.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

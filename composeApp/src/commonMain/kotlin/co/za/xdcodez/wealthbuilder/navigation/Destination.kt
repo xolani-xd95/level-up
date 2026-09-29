@@ -1,6 +1,7 @@
 package co.za.xdcodez.wealthbuilder.navigation
 
 sealed class Destination(val route: String) {
+    object HomeDestination: Destination("home")
     object BudgetOverviewDestination: Destination("budget_overview")
     object BudgetTransactionsDestination: Destination("budget_transaction/{monthId}/{categoryId}") {
         fun createRoute(monthId: String, categoryId: String) = "budget_transaction/$monthId/$categoryId"
@@ -16,7 +17,4 @@ sealed class Destination(val route: String) {
         fun createRoute(date: String, monthIndex: Int, year: Int) =
             "journal_day/$date/$monthIndex/$year"
     }
-    object CreateWorkoutStepper: Destination("create_workout_stepper")
-    object HabitsTodayDestination: Destination("habits_today")
-    object HabitsQuarterlyGoalsDestination: Destination("habits_quarterly_goals")
 }

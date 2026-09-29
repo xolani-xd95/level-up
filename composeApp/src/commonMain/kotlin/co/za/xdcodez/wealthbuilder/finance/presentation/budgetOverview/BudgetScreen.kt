@@ -19,12 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import co.za.xdcodez.wealthbuilder.common.widgets.MonthlyCarouselComposable
+import co.za.xdcodez.wealthbuilder.common.BudgetPeriod
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.BudgetCategoryModel
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.BudgetMonthModel
-import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetMonthHeaderSection
+import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetBottomRow
+import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetColorStrategy
+import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetHeaderSection
 import co.za.xdcodez.wealthbuilder.finance.presentation.composables.SummaryCategoryCardComposable
+import co.za.xdcodez.wealthbuilder.navigation.WealthBuilderBaseScreen
 import co.za.xdcodez.wealthbuilder.theme.WealthBuilderTheme
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -33,6 +37,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Composable
 fun BudgetScreenRoute(
     viewModel: BudgetScreenViewModel = koinViewModel<BudgetScreenViewModel>(),
+    onNavigateBack: () -> Unit,
     onNavigateToTransactions: (monthId: String, categoryId: String) -> Unit,
     onNavigateToBudgetSetup: (monthId: String) -> Unit
 ) {
@@ -66,6 +71,7 @@ fun BudgetScreenRoute(
     } else {
         BudgetScreen(
             state = state,
+            onNavigateBack = onNavigateBack,
             onAction = viewModel::onAction
         )
     }
@@ -76,30 +82,50 @@ fun BudgetScreenRoute(
 @Composable
 fun BudgetScreen(
     state: BudgetScreenState,
+    onNavigateBack: () -> Unit,
     onAction: (BudgetScreenActions) -> Unit
 ) {
     val month = state.selectedMonth
     val categories = state.budgetCategories
     val selectedPeriod = state.selectedPeriod
 
-    Column(
-        modifier = Modifier.fillMaxSize()
+    WealthBuilderBaseScreen(
+        modifier = Modifier.fillMaxSize(),
+        title = state.currentPeriod?.let {
+            "${
+                it.endDate.month.name.take(3).lowercase()
+                    .replaceFirstChar { c -> c.uppercase() }
+            } Budget"
+        } ?: "Budget",
+        onBackClick = onNavigateBack
     ) {
-        MonthlyCarouselComposable(
-            title =  state.currentPeriod?.displayTitle?: "",
-            onPrevious = { onAction(BudgetScreenActions.OnPreviousPeriod) },
-            onNext = { onAction(BudgetScreenActions.OnNextPeriod) }
-        )
         if (month != null && selectedPeriod != null) {
+            val expectedMoneyLeft = (month.moneyIn - month.totalBudget).coerceAtLeast(0.0)
+            val actualMoneyLeft = (month.moneyIn - month.moneyOut).coerceAtLeast(0.0)
+
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                BudgetMonthHeaderSection(month, Modifier.padding(horizontal = 8.dp))
-
+                BudgetHeaderSection(
+                    primaryMetricLabel = "Available Balance",
+                    primaryMetricValue = actualMoneyLeft,
+                    usedAmount = month.moneyOut,
+                    totalAmount = month.totalBudget,
+                    colorStrategy = BudgetColorStrategy.AvailableBalance(expectedMoneyLeft),
+                    bottomRowContent = {
+                        BudgetBottomRow(
+                            leftLabel = "money in",
+                            leftAmount = month.moneyIn,
+                            rightLabel = "month end goal",
+                            rightAmount = expectedMoneyLeft
+                        )
+                    }
+                )
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     item {
                         Text(
@@ -130,14 +156,6 @@ fun BudgetScreen(
                     }
                 }
             }
-        } else if (selectedPeriod != null) {
-            EmptyBudgetScreen(selectedPeriod.displayTitle) {
-                onAction(
-                    BudgetScreenActions.NavigateToBudgetSetup(
-                        selectedPeriod.monthId
-                    )
-                )
-            }
         }
     }
 }
@@ -152,6 +170,10 @@ fun BudgetScreenPreview() {
                     moneyIn = 51000.0,
                     moneyOut = 10000.0,
                     totalBudget = 21000.0
+                ),
+                selectedPeriod = BudgetPeriod(
+                    startDate = LocalDate(2026, 8, 26),
+                    endDate = LocalDate(2026, 8, 26)
                 ),
                 budgetCategories = listOf(
                     BudgetCategoryModel(
@@ -168,6 +190,6 @@ fun BudgetScreenPreview() {
                     ),
                 )
             ),
-        ) { }
+            {}, { })
     }
 }

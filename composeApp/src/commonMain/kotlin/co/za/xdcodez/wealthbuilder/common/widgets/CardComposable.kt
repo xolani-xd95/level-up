@@ -1,6 +1,7 @@
 package co.za.xdcodez.wealthbuilder.common.widgets
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -11,9 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import co.za.xdcodez.wealthbuilder.theme.Border
+import co.za.xdcodez.wealthbuilder.theme.Surface
 
 @Composable
 fun CardComposable(
@@ -25,18 +29,18 @@ fun CardComposable(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(
-                brush = Brush.linearGradient(
+            .border(
+                width = 0.5.dp,
+                brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.3f),
-                        Color.White.copy(alpha = 0.2f),
-                        Color.White.copy(alpha = 0.1f),
-                        Color.White.copy(alpha = 0.5f),
-                        Color.White.copy(alpha = 0.2f),
-                    )
-                )
+                        Border.Strong, //Color(0x4DFFFFFF)
+                        Border.Transparent // Color(0x00FFFFFF)
+                    ),
+                ),
+                shape = shape
             )
+            .clip(shape)
+            .background(Surface.Primary)
     ) {
         Column(
             modifier = Modifier.padding(12.dp),

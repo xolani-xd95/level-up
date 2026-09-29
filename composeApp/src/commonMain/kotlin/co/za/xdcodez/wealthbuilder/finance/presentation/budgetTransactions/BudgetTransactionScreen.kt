@@ -40,9 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.za.xdcodez.wealthbuilder.common.formatCurrency
 import co.za.xdcodez.wealthbuilder.common.toFormattedDate
+import co.za.xdcodez.wealthbuilder.common.widgets.CardComposable
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.BudgetCategoryModel
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.CategoryTransaction
-import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetCategoryHeaderSection
+import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetColorStrategy
+import co.za.xdcodez.wealthbuilder.finance.presentation.composables.BudgetHeaderSection
+import co.za.xdcodez.wealthbuilder.navigation.WealthBuilderBaseScreen
 import co.za.xdcodez.wealthbuilder.theme.WealthBuilderTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -136,26 +139,10 @@ fun BudgetTransactionScreen(
         )
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { onNavigate() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = "Edit category",
-                    tint = Color.White
-                )
-            }
-            Text(
-                text = state.category?.name.orEmpty(),
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
-            )
+    WealthBuilderBaseScreen(
+        title = state.category?.name.orEmpty(),
+        onBackClick = onNavigate,
+        actions = {
             IconButton(onClick = { showEditCategorySheet = true }) {
                 Icon(
                     imageVector = Icons.Default.Edit,
@@ -165,11 +152,18 @@ fun BudgetTransactionScreen(
                 )
             }
         }
+    ) {
         Column(
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            category?.let {
-                BudgetCategoryHeaderSection(category, Modifier.padding(horizontal = 8.dp))
+            category?.let { category ->
+                BudgetHeaderSection(
+                    primaryMetricLabel = "Budget Remaining",
+                    primaryMetricValue = category.budgetRemaining,
+                    usedAmount = category.totalPaid,
+                    totalAmount = category.budget,
+                    colorStrategy = BudgetColorStrategy.BudgetRemaining(category.budget),
+                )
             }
 
             Row(
@@ -199,7 +193,11 @@ fun BudgetTransactionScreen(
                     Text(
                         "Unpaid Transactions (${unpaid.size})",
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        style = MaterialTheme.typography.labelLarge.copy(color = Color(0x99FFFFFF))
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = Color(
+                                0x99FFFFFF
+                            )
+                        )
                     )
                 }
                 // Add a ✅ All transactions paid statment  when everything is paid instead of having an empty state
@@ -212,7 +210,11 @@ fun BudgetTransactionScreen(
                     Text(
                         "Paid Transactions (${paid.size})",
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        style = MaterialTheme.typography.labelLarge.copy(color = Color(0x99FFFFFF))
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = Color(
+                                0x99FFFFFF
+                            )
+                        )
                     )
                 }
                 items(paid) { transaction ->
@@ -232,35 +234,35 @@ fun TransactionCard(
 ) {
     val contentAlpha = if (transaction.isPaid) 0.4f else 1f
 
-    Row(
+    CardComposable(
         modifier = Modifier
-            .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White.copy(alpha = 0.05f))
             .clickable { onClick() }
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 8.dp, vertical = 2.dp),
     ) {
-        Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    transaction.name.capitalize(Locale.current),
+                    fontSize = 15.sp,
+                    color = Color.White.copy(alpha = contentAlpha)
+                )
+                if (transaction.isPaid)
+                    Text(
+                        "paid on: ${transaction.date.toFormattedDate()}",
+                        fontSize = 13.sp,
+                        color = Color(0x99FFFFFF).copy(alpha = 0.4f)
+                    )
+            }
             Text(
-                transaction.name.capitalize(Locale.current),
+                formatCurrency(transaction.amount),
                 fontSize = 15.sp,
                 color = Color.White.copy(alpha = contentAlpha)
             )
-            if (transaction.isPaid)
-                Text(
-                    "paid on: ${transaction.date.toFormattedDate()}",
-                    fontSize = 13.sp,
-                    color = Color(0x99FFFFFF).copy(alpha = 0.4f)
-                )
         }
-        Text(
-            formatCurrency(transaction.amount),
-            fontSize = 15.sp,
-            color = Color.White.copy(alpha = contentAlpha)
-        )
     }
 }
 

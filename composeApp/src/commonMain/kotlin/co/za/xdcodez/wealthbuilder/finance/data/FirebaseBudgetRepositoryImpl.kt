@@ -304,19 +304,47 @@ class FirebaseBudgetRepositoryImpl(
         name: String,
         amount: Double
     ): Result<Unit> = try {
-        firestore
+        val transactionRef = firestore
             .collection("months")
             .document(monthId)
             .collection("categories")
             .document(categoryId)
             .collection("transactions")
             .document(transactionId)
-            .update(
-                mapOf(
-                    "name" to name,
-                    "amount" to amount
-                )
+
+        // Get old values to calculate difference
+        val snapshot = transactionRef.get()
+        val oldAmount = snapshot.get<Double>("amount") ?: 0.0
+        val isPaid = snapshot.get<Boolean>("isPaid") ?: false
+        val amountDiff = amount - oldAmount
+
+        // Update transaction
+        transactionRef.update(
+            mapOf(
+                "name" to name,
+                "amount" to amount
             )
+        )
+
+        // If paid and amount changed, update totals
+        if (isPaid && amountDiff != 0.0) {
+            // Update category totalPaid
+            val categoryRef = firestore
+                .collection("months")
+                .document(monthId)
+                .collection("categories")
+                .document(categoryId)
+
+            val categorySnapshot = categoryRef.get()
+            val currentTotalPaid = categorySnapshot.get<Double>("totalPaid") ?: 0.0
+            categoryRef.update(mapOf("totalPaid" to currentTotalPaid + amountDiff))
+
+            // Update month moneyOut
+            val monthRef = firestore.collection("months").document(monthId)
+            val monthSnapshot = monthRef.get()
+            val currentMoneyOut = monthSnapshot.get<Double>("moneyOut") ?: 0.0
+            monthRef.update(mapOf("moneyOut" to currentMoneyOut + amountDiff))
+        }
 
         Result.success(Unit)
     } catch (e: Exception) {

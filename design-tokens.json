@@ -1,0 +1,274 @@
+{
+  "$schema": "https://tokens.studio/",
+  "name": "WealthBuilder Design System v2.0",
+  "description": "Complete design token system for WealthBuilder app - Dark theme with future light mode support",
+  "version": "2.0.0",
+  "colors": {
+    "primitives": {
+      "blue": {
+        "50": { "value": "#E3F2FD", "type": "color" },
+        "100": { "value": "#BBDEFB", "type": "color" },
+        "200": { "value": "#90CAF9", "type": "color" },
+        "300": { "value": "#64B5F6", "type": "color" },
+        "400": { "value": "#42A5F5", "type": "color" },
+        "500": { "value": "#1E88E5", "type": "color", "description": "Current primary color" },
+        "600": { "value": "#1976D2", "type": "color" },
+        "700": { "value": "#1565C0", "type": "color" },
+        "800": { "value": "#0D47A1", "type": "color" },
+        "900": { "value": "#0A3D91", "type": "color" }
+      },
+      "gold": {
+        "50": { "value": "#FFF9E5", "type": "color" },
+        "100": { "value": "#FFF3CC", "type": "color" },
+        "200": { "value": "#FFE699", "type": "color" },
+        "300": { "value": "#FFD966", "type": "color" },
+        "400": { "value": "#E5C44A", "type": "color" },
+        "500": { "value": "#D4AF37", "type": "color", "description": "Current accent gold" },
+        "600": { "value": "#B8992F", "type": "color" },
+        "700": { "value": "#9C8327", "type": "color" },
+        "800": { "value": "#806D1F", "type": "color" },
+        "900": { "value": "#665717", "type": "color" }
+      },
+      "green": {
+        "50": { "value": "#E8F5E9", "type": "color" },
+        "100": { "value": "#C8E6C9", "type": "color" },
+        "200": { "value": "#A5D6A7", "type": "color" },
+        "300": { "value": "#81C784", "type": "color" },
+        "400": { "value": "#66BB6A", "type": "color" },
+        "500": { "value": "#00C853", "type": "color", "description": "Success/positive state" },
+        "600": { "value": "#00B248", "type": "color" },
+        "700": { "value": "#009C3D", "type": "color" },
+        "800": { "value": "#008632", "type": "color" },
+        "900": { "value": "#007027", "type": "color" }
+      },
+      "red": {
+        "50": { "value": "#FFEBEE", "type": "color" },
+        "100": { "value": "#FFCDD2", "type": "color" },
+        "200": { "value": "#EF9A9A", "type": "color" },
+        "300": { "value": "#E57373", "type": "color" },
+        "400": { "value": "#EF5350", "type": "color" },
+        "500": { "value": "#FF2400", "type": "color", "description": "Error/negative state" },
+        "600": { "value": "#E62000", "type": "color" },
+        "700": { "value": "#CC1C00", "type": "color" },
+        "800": { "value": "#B31800", "type": "color" },
+        "900": { "value": "#991400", "type": "color" }
+      },
+      "orange": {
+        "50": { "value": "#FFF3E0", "type": "color" },
+        "100": { "value": "#FFE0B2", "type": "color" },
+        "200": { "value": "#FFCC80", "type": "color" },
+        "300": { "value": "#FFB74D", "type": "color" },
+        "400": { "value": "#FFA726", "type": "color" },
+        "500": { "value": "#FFA500", "type": "color", "description": "Warning state" },
+        "600": { "value": "#E69500", "type": "color" },
+        "700": { "value": "#CC8500", "type": "color" },
+        "800": { "value": "#B37500", "type": "color" },
+        "900": { "value": "#996500", "type": "color" }
+      },
+      "neutral": {
+        "0": { "value": "#FFFFFF", "type": "color", "description": "Pure white" },
+        "50": { "value": "#FAFAFA", "type": "color" },
+        "100": { "value": "#F5F5F5", "type": "color" },
+        "200": { "value": "#EEEEEE", "type": "color" },
+        "300": { "value": "#E0E0E0", "type": "color" },
+        "400": { "value": "#BDBDBD", "type": "color" },
+        "500": { "value": "#9E9E9E", "type": "color" },
+        "600": { "value": "#757575", "type": "color" },
+        "700": { "value": "#616161", "type": "color" },
+        "800": { "value": "#424242", "type": "color" },
+        "850": { "value": "#363636", "type": "color", "description": "Background gradient stop" },
+        "875": { "value": "#1C1C1E", "type": "color", "description": "Bottom sheet container" },
+        "880": { "value": "#1B1B1B", "type": "color", "description": "Background gradient stop" },
+        "900": { "value": "#121212", "type": "color", "description": "Very dark surface" },
+        "950": { "value": "#000000", "type": "color", "description": "Pure black" }
+      }
+    },
+    "semantic": {
+      "dark": {
+        "background": {
+          "primary": { "value": "{colors.primitives.neutral.950}", "type": "color" },
+          "secondary": { "value": "{colors.primitives.neutral.900}", "type": "color" },
+          "gradient-start": { "value": "{colors.primitives.neutral.950}", "type": "color" },
+          "gradient-mid-1": { "value": "{colors.primitives.neutral.880}", "type": "color" },
+          "gradient-mid-2": { "value": "#495057", "type": "color", "description": "Custom gray-blue" },
+          "gradient-mid-3": { "value": "{colors.primitives.neutral.850}", "type": "color" },
+          "gradient-end": { "value": "{colors.primitives.neutral.950}", "type": "color" }
+        },
+        "surface": {
+          "primary": { "value": "rgba(255, 255, 255, 0.05)", "type": "color", "description": "5% white - main cards" },
+          "secondary": { "value": "rgba(255, 255, 255, 0.10)", "type": "color", "description": "10% white - elevated cards" },
+          "tertiary": { "value": "rgba(255, 255, 255, 0.12)", "type": "color", "description": "12% white - card highlights" },
+          "input": { "value": "rgba(255, 255, 255, 0.08)", "type": "color", "description": "8% white - text fields" },
+          "modal": { "value": "{colors.primitives.neutral.875}", "type": "color", "description": "Bottom sheets" },
+          "navigation": { "value": "rgba(128, 128, 128, 0.5)", "type": "color", "description": "Bottom nav background" },
+          "selected": { "value": "rgba(255, 255, 255, 0.05)", "type": "color", "description": "Selected state background" }
+        },
+        "text": {
+          "primary": { "value": "{colors.primitives.neutral.0}", "type": "color", "description": "100% white - main text" },
+          "secondary": { "value": "rgba(255, 255, 255, 0.60)", "type": "color", "description": "60% white - labels, secondary info" },
+          "tertiary": { "value": "rgba(255, 255, 255, 0.40)", "type": "color", "description": "40% white - disabled text" },
+          "placeholder": { "value": "rgba(255, 255, 255, 0.27)", "type": "color", "description": "27% white - placeholders" },
+          "disabled": { "value": "rgba(255, 255, 255, 0.20)", "type": "color", "description": "20% white - disabled" },
+          "muted": { "value": "rgba(255, 255, 255, 0.50)", "type": "color", "description": "50% white - very muted text" }
+        },
+        "border": {
+          "subtle": { "value": "rgba(255, 255, 255, 0.10)", "type": "color", "description": "10% white - subtle borders" },
+          "default": { "value": "rgba(255, 255, 255, 0.20)", "type": "color", "description": "20% white - standard borders" },
+          "strong": { "value": "rgba(255, 255, 255, 0.30)", "type": "color", "description": "30% white - emphasized borders" },
+          "transparent": { "value": "rgba(255, 255, 255, 0.00)", "type": "color", "description": "Transparent - unfocused states" }
+        },
+        "action": {
+          "primary": { "value": "{colors.primitives.blue.500}", "type": "color", "description": "Primary actions" },
+          "primary-hover": { "value": "{colors.primitives.blue.600}", "type": "color" },
+          "primary-active": { "value": "{colors.primitives.blue.700}", "type": "color" },
+          "primary-disabled": { "value": "rgba(30, 136, 229, 0.05)", "type": "color" },
+          "accent": { "value": "{colors.primitives.gold.500}", "type": "color", "description": "Accent/selected states" },
+          "accent-hover": { "value": "{colors.primitives.gold.600}", "type": "color" },
+          "success": { "value": "{colors.primitives.green.500}", "type": "color" },
+          "error": { "value": "{colors.primitives.red.500}", "type": "color" },
+          "warning": { "value": "{colors.primitives.orange.500}", "type": "color" }
+        },
+        "state": {
+          "success": { "value": "{colors.primitives.green.500}", "type": "color" },
+          "success-bg": { "value": "rgba(0, 200, 83, 0.15)", "type": "color" },
+          "error": { "value": "{colors.primitives.red.500}", "type": "color" },
+          "error-bg": { "value": "rgba(255, 36, 0, 0.15)", "type": "color" },
+          "warning": { "value": "{colors.primitives.orange.500}", "type": "color" },
+          "warning-bg": { "value": "rgba(255, 165, 0, 0.15)", "type": "color" },
+          "info": { "value": "{colors.primitives.blue.500}", "type": "color" },
+          "info-bg": { "value": "rgba(30, 136, 229, 0.15)", "type": "color" }
+        },
+        "overlay": {
+          "light": { "value": "rgba(255, 255, 255, 0.08)", "type": "color" },
+          "medium": { "value": "rgba(255, 255, 255, 0.20)", "type": "color" },
+          "heavy": { "value": "rgba(255, 255, 255, 0.40)", "type": "color" },
+          "scrim": { "value": "rgba(0, 0, 0, 0.60)", "type": "color" }
+        }
+      },
+      "light": {
+        "background": {
+          "primary": { "value": "{colors.primitives.neutral.0}", "type": "color", "description": "Future light mode" },
+          "secondary": { "value": "{colors.primitives.neutral.50}", "type": "color" }
+        },
+        "surface": {
+          "primary": { "value": "{colors.primitives.neutral.0}", "type": "color" },
+          "secondary": { "value": "{colors.primitives.neutral.50}", "type": "color" },
+          "tertiary": { "value": "{colors.primitives.neutral.100}", "type": "color" }
+        },
+        "text": {
+          "primary": { "value": "{colors.primitives.neutral.950}", "type": "color" },
+          "secondary": { "value": "{colors.primitives.neutral.700}", "type": "color" },
+          "tertiary": { "value": "{colors.primitives.neutral.500}", "type": "color" }
+        },
+        "border": {
+          "subtle": { "value": "{colors.primitives.neutral.200}", "type": "color" },
+          "default": { "value": "{colors.primitives.neutral.300}", "type": "color" },
+          "strong": { "value": "{colors.primitives.neutral.400}", "type": "color" }
+        },
+        "action": {
+          "primary": { "value": "{colors.primitives.blue.500}", "type": "color" },
+          "accent": { "value": "{colors.primitives.gold.500}", "type": "color" }
+        }
+      }
+    }
+  },
+  "spacing": {
+    "0": { "value": "0px", "type": "spacing" },
+    "1": { "value": "2px", "type": "spacing", "description": "Minimal spacing" },
+    "2": { "value": "4px", "type": "spacing", "description": "Tight spacing" },
+    "3": { "value": "6px", "type": "spacing", "description": "Progress bar height" },
+    "4": { "value": "8px", "type": "spacing", "description": "Small spacing" },
+    "5": { "value": "10px", "type": "spacing", "description": "Medium spacing" },
+    "6": { "value": "12px", "type": "spacing", "description": "Card padding, standard spacing" },
+    "7": { "value": "16px", "type": "spacing", "description": "Large spacing" },
+    "8": { "value": "18px", "type": "spacing", "description": "Bottom nav bottom padding" },
+    "9": { "value": "24px", "type": "spacing", "description": "Extra large spacing" },
+    "10": { "value": "32px", "type": "spacing", "description": "Section spacing" },
+    "11": { "value": "40px", "type": "spacing" },
+    "12": { "value": "48px", "type": "spacing" },
+    "13": { "value": "64px", "type": "spacing" },
+    "14": { "value": "80px", "type": "spacing", "description": "Bottom nav clearance" }
+  },
+  "borderRadius": {
+    "none": { "value": "0px", "type": "borderRadius" },
+    "sm": { "value": "4px", "type": "borderRadius" },
+    "md": { "value": "8px", "type": "borderRadius", "description": "Small components, inputs, nav bar" },
+    "lg": { "value": "12dp", "type": "borderRadius", "description": "Cards (standard)" },
+    "xl": { "value": "16px", "type": "borderRadius", "description": "Bottom nav items" },
+    "2xl": { "value": "24px", "type": "borderRadius" },
+    "full": { "value": "999px", "type": "borderRadius", "description": "Fully rounded (pills, progress)" }
+  },
+  "borderWidth": {
+    "none": { "value": "0px", "type": "borderWidth" },
+    "thin": { "value": "0.5px", "type": "borderWidth", "description": "Card borders" },
+    "default": { "value": "1px", "type": "borderWidth", "description": "Standard borders, focused inputs" },
+    "thick": { "value": "2px", "type": "borderWidth" }
+  },
+  "typography": {
+    "fontSizes": {
+      "xs": { "value": "12px", "type": "fontSizes", "description": "Bottom nav labels" },
+      "sm": { "value": "13px", "type": "fontSizes", "description": "Small labels" },
+      "base": { "value": "15px", "type": "fontSizes", "description": "Input text, body" },
+      "md": { "value": "16px", "type": "fontSizes", "description": "Body medium" },
+      "lg": { "value": "18px", "type": "fontSizes", "description": "Large labels" },
+      "xl": { "value": "20px", "type": "fontSizes", "description": "Title medium" },
+      "2xl": { "value": "24px", "type": "fontSizes", "description": "Title large" },
+      "3xl": { "value": "28px", "type": "fontSizes", "description": "Headline small" },
+      "4xl": { "value": "32px", "type": "fontSizes", "description": "Headline medium" }
+    },
+    "lineHeights": {
+      "tight": { "value": "1.0", "type": "lineHeight", "description": "Input fields" },
+      "normal": { "value": "1.5", "type": "lineHeight" },
+      "relaxed": { "value": "1.625", "type": "lineHeight" }
+    },
+    "fontWeights": {
+      "regular": { "value": "400", "type": "fontWeight" },
+      "medium": { "value": "500", "type": "fontWeight" },
+      "semibold": { "value": "600", "type": "fontWeight" },
+      "bold": { "value": "700", "type": "fontWeight" }
+    }
+  },
+  "elevation": {
+    "0": { "value": "none", "type": "boxShadow", "description": "No shadow" },
+    "1": { "value": "0px 1px 3px rgba(0, 0, 0, 0.3)", "type": "boxShadow", "description": "Subtle elevation" },
+    "2": { "value": "0px 2px 6px rgba(0, 0, 0, 0.4)", "type": "boxShadow", "description": "Card elevation" },
+    "3": { "value": "0px 4px 12px rgba(0, 0, 0, 0.5)", "type": "boxShadow", "description": "Modal elevation" },
+    "4": { "value": "0px 8px 24px rgba(0, 0, 0, 0.6)", "type": "boxShadow", "description": "High elevation" }
+  },
+  "animation": {
+    "duration": {
+      "fast": { "value": "150ms", "type": "duration" },
+      "normal": { "value": "300ms", "type": "duration", "description": "Standard animations" },
+      "slow": { "value": "500ms", "type": "duration" }
+    },
+    "easing": {
+      "default": { "value": "cubic-bezier(0.4, 0, 0.2, 1)", "type": "cubicBezier", "description": "Standard easing" },
+      "accelerate": { "value": "cubic-bezier(0.4, 0, 1, 1)", "type": "cubicBezier" },
+      "decelerate": { "value": "cubic-bezier(0, 0, 0.2, 1)", "type": "cubicBezier" }
+    }
+  },
+  "opacity": {
+    "0": { "value": "0%", "type": "opacity" },
+    "5": { "value": "5%", "type": "opacity", "description": "Card backgrounds (dark)" },
+    "8": { "value": "8%", "type": "opacity", "description": "Input fields" },
+    "10": { "value": "10%", "type": "opacity", "description": "Borders (subtle)" },
+    "12": { "value": "12%", "type": "opacity", "description": "Card backgrounds (light)" },
+    "15": { "value": "15%", "type": "opacity", "description": "State backgrounds" },
+    "20": { "value": "20%", "type": "opacity", "description": "Disabled elements" },
+    "27": { "value": "27%", "type": "opacity", "description": "Placeholder text" },
+    "30": { "value": "30%", "type": "opacity", "description": "Borders (strong)" },
+    "40": { "value": "40%", "type": "opacity", "description": "Disabled text" },
+    "50": { "value": "50%", "type": "opacity", "description": "Muted text" },
+    "60": { "value": "60%", "type": "opacity", "description": "Secondary text" },
+    "70": { "value": "70%", "type": "opacity", "description": "Dimmed states" },
+    "80": { "value": "80%", "type": "opacity", "description": "Enabled buttons" },
+    "100": { "value": "100%", "type": "opacity", "description": "Full opacity" }
+  },
+  "iconSize": {
+    "sm": { "value": "16px", "type": "sizing" },
+    "md": { "value": "24px", "type": "sizing", "description": "Standard icons" },
+    "lg": { "value": "32px", "type": "sizing" },
+    "xl": { "value": "48px", "type": "sizing" },
+    "2xl": { "value": "64px", "type": "sizing", "description": "Empty state icons" }
+  }
+}

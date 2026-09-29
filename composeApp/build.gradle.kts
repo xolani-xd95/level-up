@@ -49,6 +49,8 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
+            implementation("io.github.binayshaw7777:kotstep:3.2.0") //
+
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)

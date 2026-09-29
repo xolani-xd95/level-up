@@ -1,11 +1,15 @@
 package co.za.xdcodez.wealthbuilder.di
 
 import co.za.xdcodez.wealthbuilder.finance.data.FirebaseBudgetRepositoryImpl
+import co.za.xdcodez.wealthbuilder.finance.data.FirebaseGoalRepositoryImpl
 import co.za.xdcodez.wealthbuilder.finance.domain.BudgetRepository
+import co.za.xdcodez.wealthbuilder.finance.domain.GoalRepository
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetOverview.BudgetScreenViewModel
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetTransactions.TransactionsViewModel
 import co.za.xdcodez.wealthbuilder.finance.presentation.createbudget.CreateBudgetViewModel
 import co.za.xdcodez.wealthbuilder.finance.presentation.dashboard.BudgetDashboardViewModel
+import co.za.xdcodez.wealthbuilder.finance.presentation.goals.CreateGoalViewModel
+import co.za.xdcodez.wealthbuilder.finance.presentation.goals.GoalDetailViewModel
 import co.za.xdcodez.wealthbuilder.journal.data.FirebaseTradingRepositoryImpl
 import co.za.xdcodez.wealthbuilder.journal.domain.JournalRepository
 import co.za.xdcodez.wealthbuilder.journal.presentation.details.DayDetailViewModel
@@ -24,12 +28,15 @@ expect val platformModule: Module
 // container for related dependencies
 val sharedModule = module {
     singleOf(::FirebaseBudgetRepositoryImpl).bind<BudgetRepository>()
+    singleOf(::FirebaseGoalRepositoryImpl).bind<GoalRepository>()
     singleOf(::FirebaseTradingRepositoryImpl).bind<JournalRepository>()
     singleOf(::FirebaseHabitsRepositoryImpl).bind<HabitsRepository>()
     viewModelOf(::BudgetDashboardViewModel)
     viewModelOf(::BudgetScreenViewModel)
     viewModelOf(::CreateBudgetViewModel)
     viewModelOf(::TransactionsViewModel)
+    viewModelOf(::CreateGoalViewModel)
+    viewModelOf(::GoalDetailViewModel)
     viewModelOf(::JournalHomeViewModel)
     viewModelOf(::DayDetailViewModel)
     viewModelOf(::TodayCheckInViewModel)

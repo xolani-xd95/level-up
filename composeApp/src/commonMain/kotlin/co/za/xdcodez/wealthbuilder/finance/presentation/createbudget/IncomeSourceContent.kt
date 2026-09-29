@@ -27,10 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import co.za.xdcodez.wealthbuilder.common.formatCurrency
+import co.za.xdcodez.wealthbuilder.common.widgets.CardComposable
 import co.za.xdcodez.wealthbuilder.common.widgets.CustomTextField
 import co.za.xdcodez.wealthbuilder.finance.domain.dto.IncomeSourceInput
 import co.za.xdcodez.wealthbuilder.theme.WealthBuilderTheme
@@ -141,39 +144,76 @@ fun IncomeSourceRow(
     onAmountChange: (String) -> Unit,
     onRemove: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        CustomTextField(
-            value = source.name,
-            onValueChange = onNameChange,
-            modifier = Modifier.weight(0.6f).height(40.dp),
-            placeholder = "e.g. Salary"
-        )
+    CardComposable {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "INCOME SOURCE",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                if (showRemove) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Remove",
+                        tint = Color(0x99FFFFFF),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onRemove() }
+                    )
+                }
+            }
 
-        CustomTextField(
-            value = source.amount,
-            placeholder = "0.00",
-            onValueChange = onAmountChange,
-            modifier = Modifier.weight(0.4f).height(40.dp),
-            prefix = "R ",
-            filter = { it.filter { c -> c.isDigit() || c == '.' } }
-        )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(0.6f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Name",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0x99FFFFFF),
+                        fontSize = 11.sp
+                    )
+                    CustomTextField(
+                        value = source.name,
+                        onValueChange = onNameChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = "e.g. Salary"
+                    )
+                }
 
-        if (showRemove) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Remove",
-                tint = Color(0x99FFFFFF),
-                modifier = Modifier
-                    .size(18.dp)
-                    .clickable { onRemove() }
-            )
+                Column(
+                    modifier = Modifier.weight(0.4f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Amount",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0x99FFFFFF),
+                        fontSize = 11.sp
+                    )
+                    CustomTextField(
+                        value = source.amount,
+                        placeholder = "0.00",
+                        onValueChange = onAmountChange,
+                        modifier = Modifier.fillMaxWidth(),
+                        prefix = "R ",
+                        filter = { it.filter { c -> c.isDigit() || c == '.' } }
+                    )
+                }
+            }
         }
     }
-
 }
 
 @Preview

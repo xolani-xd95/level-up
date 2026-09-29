@@ -1,13 +1,9 @@
 package co.za.xdcodez.wealthbuilder.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -17,57 +13,68 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import co.za.xdcodez.wealthbuilder.finance.presentation.dashboard.BudgetDashboardRoute
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetOverview.BudgetScreenRoute
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetOverview.BudgetScreenViewModel
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetTransactions.BudgetTransactionScreenRoute
 import co.za.xdcodez.wealthbuilder.finance.presentation.budgetTransactions.TransactionsViewModel
 import co.za.xdcodez.wealthbuilder.finance.presentation.createbudget.CreateBudgetScreenRoute
-import co.za.xdcodez.wealthbuilder.habits.presentation.today.TodayCheckInScreenRoute
+import co.za.xdcodez.wealthbuilder.finance.presentation.goals.CreateGoalScreenRoute
+import co.za.xdcodez.wealthbuilder.finance.presentation.goals.GoalDetailScreenRoute
+import co.za.xdcodez.wealthbuilder.home.HomeNavigationEvent
+import co.za.xdcodez.wealthbuilder.home.HomeScreenRoute
 import co.za.xdcodez.wealthbuilder.journal.presentation.details.DayDetailNavigationEvent
 import co.za.xdcodez.wealthbuilder.journal.presentation.details.DayDetailScreenRoute
-import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeActions
-import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeNavigationEvent
-import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeScreenRoute
-import co.za.xdcodez.wealthbuilder.journal.presentation.home.JournalHomeViewModel
 import co.za.xdcodez.wealthbuilder.navigation.Destination.BudgetOverviewDestination
 import co.za.xdcodez.wealthbuilder.navigation.Destination.BudgetTransactionsDestination
-import co.za.xdcodez.wealthbuilder.navigation.Destination.SetupBudgetDestination
 import co.za.xdcodez.wealthbuilder.navigation.Destination.CreateGoalDestination
 import co.za.xdcodez.wealthbuilder.navigation.Destination.GoalDetailDestination
+import co.za.xdcodez.wealthbuilder.navigation.Destination.SetupBudgetDestination
 import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController, paddingValues: PaddingValues) {
+fun RootNavigationGraph(navController: NavHostController) {
     KoinContext {
         NavHost(
             navController = navController,
-            startDestination = BottomNavDestination.Habits.route,
-            modifier = Modifier.padding(paddingValues)
+            startDestination = Destination.HomeDestination.route
         ) {
+
+            composable(Destination.HomeDestination.route) {
+                HomeScreenRoute { event ->
+                    when (event) {
+                        is HomeNavigationEvent.NavigateToBudgetDetails -> {
+                            navController.navigate(BudgetOverviewDestination.route)
+                        }
+
+                        is HomeNavigationEvent.NavigateToCreateGoal -> {
+                            navController.navigate(CreateGoalDestination.route)
+                        }
+
+                        is HomeNavigationEvent.NavigateToCreateBudget -> {
+                            navController.navigate(SetupBudgetDestination.createRoute(event.monthId))
+                        }
+                        is HomeNavigationEvent.NavigateToDayDetails -> {
+                            navController.navigate(
+                                Destination.JournalDayDetailDestination.createRoute(
+                                    date = event.date,
+                                    monthIndex = event.monthIndex,
+                                    year = event.year
+                                )
+                            )
+                        }
+                    }
+                }
+            }
             /**
              * Finance navigation screens
              * */
-            composable(BottomNavDestination.Finance.route) {
-                BudgetDashboardRoute(
-                    onNavigateToBudgetDetails = {
-                        navController.navigate(BudgetOverviewDestination.route)
-                    },
-                    onNavigateToCreateGoal = {
-                        navController.navigate(CreateGoalDestination.route)
-                    },
-                    onNavigateToGoalDetail = { goalId ->
-                        navController.navigate(GoalDetailDestination.createRoute(goalId))
-                    }
-                )
-            }
 
             composable(BudgetOverviewDestination.route) { entry ->
                 val viewModel: BudgetScreenViewModel = entry.sharedViewModel(
                     navController,
-                    BottomNavDestination.Finance.route
+                    Destination.HomeDestination.route
                 )
                 val navBackStack by navController.currentBackStackEntryAsState()
                 LaunchedEffect(navBackStack?.destination?.route) {
@@ -77,8 +84,16 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
                 }
 
                 BudgetScreenRoute(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    },
                     onNavigateToTransactions = { monthId, categoryId ->
-                        navController.navigate(BudgetTransactionsDestination.createRoute(monthId, categoryId))
+                        navController.navigate(
+                            BudgetTransactionsDestination.createRoute(
+                                monthId,
+                                categoryId
+                            )
+                        )
                     },
                     onNavigateToBudgetSetup = { monthId ->
                         navController.navigate(SetupBudgetDestination.createRoute(monthId))
@@ -107,7 +122,7 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
                 val viewModel: TransactionsViewModel =
                     entry.sharedViewModel(
                         navController,
-                        BottomNavDestination.Finance.route
+                        BudgetOverviewDestination.route
                     )
 
                 val monthId = entry.arguments?.getString("monthId") ?: ""
@@ -122,40 +137,34 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
                 }
             }
 
-            /**
-             * Journal navigation screens
-             * */
-            composable(BottomNavDestination.Journal.route) { entry ->
-                val viewModel: JournalHomeViewModel = entry.sharedViewModel(
-                    navController,
-                    BottomNavDestination.Journal.route
-                )
-                val state by viewModel.state.collectAsState()
-
-                val navBackStack by navController.currentBackStackEntryAsState()
-                LaunchedEffect(navBackStack?.destination?.route) {
-                    if (navBackStack?.destination?.route == BottomNavDestination.Journal.route) {
-                        viewModel.onAction(JournalHomeActions.Refresh)
-                    }
-                }
-
-                JournalHomeScreenRoute(
-                    viewModel,
-                    onNavigate = { event ->
-                        when (event) {
-                            is JournalHomeNavigationEvent.ToDayDetail -> {
-                                navController.navigate(
-                                    Destination.JournalDayDetailDestination.createRoute(
-                                        date = event.date,
-                                        monthIndex = event.monthIndex,
-                                        year = event.year
-                                    )
-                                )
-                            }
+            // Goal screens
+            composable(CreateGoalDestination.route) {
+                CreateGoalScreenRoute(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToGoalDetail = { goalId ->
+                        navController.navigate(GoalDetailDestination.createRoute(goalId)) {
+                            popUpTo(CreateGoalDestination.route) { inclusive = true }
                         }
                     }
                 )
             }
+
+            composable(
+                route = GoalDetailDestination.route,
+                arguments = listOf(
+                    navArgument("goalId") { type = NavType.StringType }
+                )
+            ) { entry ->
+                val goalId = entry.arguments?.getString("goalId") ?: ""
+                GoalDetailScreenRoute(
+                    goalId = goalId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            /**
+             * Journal navigation screens
+             * */
 
             // journal day detail
             composable(
@@ -180,18 +189,13 @@ fun RootNavigationGraph(navController: NavHostController, paddingValues: Padding
                             DayDetailNavigationEvent.ToAddTrade -> {
                                 // TODO: navigate to add trade screen
                             }
+
                             is DayDetailNavigationEvent.ToTradeDetail -> {
                                 // TODO: navigate to trade detail screen
                             }
                         }
                     }
                 )
-            }
-            /**
-             * Habits navigation screens
-             * */
-            composable(BottomNavDestination.Habits.route) {
-                TodayCheckInScreenRoute()
             }
         }
     }

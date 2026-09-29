@@ -53,14 +53,15 @@ class BudgetDashboardViewModel(
             _state.update { it.copy(isLoading = true) }
 
             val currentPeriod = getCurrentBudgetPeriod()
-//            val monthResult = repository.getMonth(currentPeriod.monthId)
-            val monthResult = repository.getMonth("2026-07-27")
+            val monthResult = repository.getMonth(currentPeriod.monthId)
+//            val monthResult = repository.getMonth("2026-07-27")
 
             // TODO: Load goals from repository when implemented
             val goals = emptyList<co.za.xdcodez.wealthbuilder.finance.domain.dto.Goal>()
 
             _state.update {
                 it.copy(
+                    currentPeriod = currentPeriod.monthId,
                     isLoading = false,
                     currentMonthSummary = monthResult,
                     goals = goals

@@ -48,6 +48,7 @@ import co.za.xdcodez.wealthbuilder.common.formatCurrency
 import co.za.xdcodez.wealthbuilder.common.getRemainingMessage
 import co.za.xdcodez.wealthbuilder.common.toMonthName
 import co.za.xdcodez.wealthbuilder.habits.domain.getDisciplineMessage
+import co.za.xdcodez.wealthbuilder.home.HomeNavigationEvent
 import co.za.xdcodez.wealthbuilder.journal.data.model.MonthlyTradingTarget
 import co.za.xdcodez.wealthbuilder.journal.domain.model.TradeDirection
 import co.za.xdcodez.wealthbuilder.journal.domain.model.TradeEntry
@@ -70,7 +71,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Composable
 fun JournalHomeScreenRoute(
     viewModel: JournalHomeViewModel = koinViewModel(),
-    onNavigate: (JournalHomeNavigationEvent) -> Unit
+    onNavigate: (HomeNavigationEvent) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 

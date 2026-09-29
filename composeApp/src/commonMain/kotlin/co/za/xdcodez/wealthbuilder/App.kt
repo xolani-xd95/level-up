@@ -1,5 +1,7 @@
 package co.za.xdcodez.wealthbuilder
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -19,9 +21,10 @@ fun App() {
     WealthBuilderTheme {
         Scaffold(
             containerColor = Color.Transparent,
+            contentWindowInsets = WindowInsets.systemBars,
             bottomBar = { ModernBottomNavigationBar(navController) }
-        ) { paddingValues ->
-            RootNavigationGraph(navController, paddingValues)
+        ) {
+            RootNavigationGraph(navController)
         }
     }
 }

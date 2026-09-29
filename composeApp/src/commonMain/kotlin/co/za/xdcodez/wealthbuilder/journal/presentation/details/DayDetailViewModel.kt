@@ -2,7 +2,7 @@ package co.za.xdcodez.wealthbuilder.journal.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.za.xdcodez.wealthbuilder.common.monthId
+import co.za.xdcodez.wealthbuilder.common.PAYDAY
 import co.za.xdcodez.wealthbuilder.journal.domain.JournalRepository
 import co.za.xdcodez.wealthbuilder.journal.domain.model.TradeStatus
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -45,7 +45,7 @@ class DayDetailViewModel(
 
             val config = repository.getConfig()
             val monthlyTarget = repository.getMonthlyTarget(
-                monthId(monthIndex, year)
+                "$year-${monthIndex.toString().padStart(2, '0')}-$PAYDAY"
             )
 
             // fetch all month trades to calculate monthly P&L so far
